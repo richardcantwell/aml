@@ -38,97 +38,122 @@
 		$clients = get_users( $args );
 		// Handy\I_Handy::tip($clients);
 		?>
-		<div class="user_actions">
+		<div class="clients">
 			<? if ( !empty($clients) ): ?>
-				<div class="accordion" id="accordion-clients">
-					<? $i=1; $j=1; foreach ($clients as $client): ?>
-						<?
-						$business_name = get_user_meta($client->ID, 'aml_business_name', true);
-						$client_name = $client->display_name . ( !empty($business_name) ? ' ('.$business_name.')':''); 
-						$directors_package = get_user_meta($client->ID, 'aml_company_directors', true); // Handy\I_Handy::tip($directors_package);
-						/*
-						   [status] => 1|0
-						   [entry_id] =>
-						   [members] =>
-						   			[0] =>
-						   				[email] => XXX@YYY.com
-						   				[status] => 1
-						   				[step] => 1
-						   				[started] => 1560172462
-						   				[updated] => 1560172462
-						   				[finished] => // [added when user is queried as being complete ]
-						   				[overwritten] => // [added when there's a manual overwrite via dashboard]
-						   				[uuid] => ca08f1c1
-						   				[submissions] =>
-						   					[0] =>
-						   						[uuid] => ca08f1c1
-						   						[submission_id] => 21896
-						   						[status] => 5
-						   						[document_type] => idcard
-						   						[authentication_data] => Fail|Pass
-						   						[facial_match] => Fail|Pass
-						   					[1]
-						   					[2]
-						   			[1]
-						   			[2]
-						   			..
-						 [flow_unlocked] => 1560186422
-						*/
-						// $client->user_email
-						?>
-						<div class="card">
-							<div class="card-header" id="heading-client-<?=$client->ID?>">
-								<h2 class="mb-0"><button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse-client-<?=$client->ID?>" aria-expanded="<?=($i===1?'true':'false')?>" aria-controls="collapse-client-<?=$client->ID?>"><?=$client_name?></button></h2>
-								<span class="indicators"><span class="status-<?=$directors_package['status']?>"></span></span>
-							</div> <!-- card-header -->
-							<div id="collapse-client-<?=$client->ID?>" class="collapse<?=($i===1?' show':'')?>" aria-labelledby="heading-client-<?=$client->ID?>" data-parent="#accordion-clients">
-								<div class="card-body">
-									<? if ( empty($directors_package['status']) ): ?>
-										<p>Displaying incomplete ID Pal tasks:</p>
-										<? if ( !empty($directors_package['members']) ): ?>
-											<div class="transaction">
-												<ul>
-												<? foreach ( $directors_package['members'] as $member ) { ?>
-													<span class="indicators"><span class="status-<?=$member['status']?>"></span><span class="step-<?$member['step']?>"></span></span>
-													<? if ( empty($member['status']) ) { ?>
-														<? $url_unique_idpal = add_query_arg( 'uuid', $member['uuid'], $url_base_idpal ); // new $member['uuid'] ?>
-														<li>
-															<?
-															echo sprintf("User <a href='mailto:%1s' title='%2s' target='_blank'>%3s</a>, started %4s%5s (AML package step <a href='#' title='%6s'>%7s</a>) has currently ID-Pal status %8s.",
-																$member['email'].'?subject='.urlencode('ID Verification Outstanding').'&body=Please complete your ID Verification using your unique ID-Pal URL unique ID Pal URL '.$url_unique_idpal.'.',
-																print_r($member,1),
-																$member['email'],
-																date('Y-m-d H:i:s', $member['started']),
-																(!empty($member['updated'])?', updated '.date('Y-m-d H:i:s', $member['updated']):''),
-																'0: AML package created, 1: link sent, 2: docs submitted',
-																$member['step'],
-																(!empty($member['submissions'])?'<a href="#" title="'.$error_codes[$member['submissions'][0]['status']].'">'.$member['submissions'][0]['status'].'</a>':'<a href="#" title="'.$error_codes[0].'">0</a>')
-																// (!empty($member['submissions'])?'<a href="#" title="'.$error_codes[$member['submissions'][0]['status']].'">'.$member['submissions'][0]['status'].'</a>':'<a href="#" title="'.$error_codes[0].'">0</a>')
-															);
-															?>
-														</li>
-													<? } else { ?>
-														<? // these users should be complete ?>
-														<li><?=$member['email']?> is status <?=$member['status']?>.</li>
-													<? } // empty($member['status']) ?>
-												<? } // $directors_package['members'] as $member ?>
-												</ul>
-											</div>
-										<? endif; // !empty($directors_package['members']) ?>
-										<? $j++; ?>
-									<? else: ?>
-										<p>Displaying complete ID Pal tasks:</p>
-									<? endif; // empty($directors_package['status']) ) ?>
-									<a href="#" class="btn btn-secondary idpal_btn_submit_user" data-id="<?=$client->ID?>" title="Send this user to ID Pal">Send</a>
-								</div> <!-- card-body -->
-							</div> <!-- collapse -->
-						</div> <!-- card -->
-					<? $i++; endforeach; // foreach ($clients as $client) ?>
-				</div> <!-- .accordion -->
+				<div class="table-responsive">
+               		<table class="table table-striped table-sm">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th></th>
+								<th>Client</th>
+								<th>Date</th>
+								<th>XX</th>
+								<th>Status</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							<? $i=1; $j=1; foreach ($clients as $client): ?>
+								<?
+								$business_name = get_user_meta($client->ID, 'aml_business_name', true);
+								$client_name = $client->display_name . ( !empty($business_name) ? ' ('.$business_name.')':''); 
+								$directors_package = get_user_meta($client->ID, 'aml_company_directors', true); //Handy\I_Handy::tip($directors_package);
+								/*
+								   [status] => 1|0
+								   [entry_id] =>
+								   [members] =>
+								   			[0] =>
+								   				[email] => XXX@YYY.com
+								   				[status] => 1
+								   				[step] => 1
+								   				[started] => 1560172462
+								   				[updated] => 1560172462
+								   				[finished] => // [added when user is queried as being complete ]
+								   				[overwritten] => // [added when there's a manual overwrite via dashboard]
+								   				[uuid] => ca08f1c1
+								   				[submissions] =>
+								   					[0] =>
+								   						[uuid] => ca08f1c1
+								   						[submission_id] => 21896
+								   						[status] => 5
+								   						[document_type] => idcard
+								   						[authentication_data] => Fail|Pass
+								   						[facial_match] => Fail|Pass
+								   					[1]
+								   					[2]
+								   			[1]
+								   			[2]
+								   			..
+								 [flow_unlocked] => 1560186422
+								*/
+								// $client->user_email
+								?>
+                                <tr class="accordion-toggle collapsed" id="accordion-client-<?=$client->ID?>" data-toggle="collapse" data-parent="#accordion-client-<?=$client->ID?>" href="#collapse-client-<?=$client->ID?>">
+	                                <td class="expand-button"></td>
+	                                <td><?=$i?></td>
+	                                <td><?=$client_name?></td>
+	                                <td>XX</td>
+	                                <td>XX</td>
+	                                <td><span class="status-<?=$directors_package['status']?>"></td>
+	                                <td>
+	                                	<? if ( empty($directors_package['status']) ): ?>
+	                                		<a href="#" class="btn btn-link idpal_btn_submit_user" data-id="<?=$client->ID?>" title="Send this user to ID Pal">Send</a>
+	                                	<? else: ?>
+	                                		<a href="#" class="btn btn-link idpal_btn_nudge_user" data-id="<?=$client->ID?>" title="Nudge this user">Nudge</a>
+	                                	<? endif; ?>
+	                                </td>
+                                </tr>
+								<tr class="hide-table-padding">
+									<td colspan="5">
+										<div id="collapse-client-<?=$client->ID?>" class="collapse in p-3">
+											<? if ( empty($directors_package['status']) ): ?>
+												<p>Displaying incomplete ID Pal tasks:</p>
+												<? if ( !empty($directors_package['members']) ): ?>
+													<div class="transaction">
+														<ul>
+														<? foreach ( $directors_package['members'] as $member ) { ?>
+															<span class="indicators"><span class="status-<?=$member['status']?>"></span><span class="step-<?$member['step']?>"></span></span>
+															<? if ( empty($member['status']) ) { ?>
+																<? $url_unique_idpal = add_query_arg( 'uuid', $member['uuid'], $url_base_idpal ); // new $member['uuid'] ?>
+																<li>
+																	<?
+																	echo sprintf("User <a href='mailto:%1s' title='%2s' target='_blank'>%3s</a>, started %4s%5s (AML package step <a href='#' title='%6s'>%7s</a>) has currently ID-Pal status %8s.",
+																		$member['email'].'?subject='.urlencode('ID Verification Outstanding').'&body=Please complete your ID Verification using your unique ID-Pal URL unique ID Pal URL '.$url_unique_idpal.'.',
+																		print_r($member,1),
+																		$member['email'],
+																		date('Y-m-d H:i:s', $member['started']),
+																		(!empty($member['updated'])?', updated '.date('Y-m-d H:i:s', $member['updated']):''),
+																		'0: AML package created, 1: link sent, 2: docs submitted',
+																		$member['step'],
+																		(!empty($member['submissions'])?'<a href="#" title="'.$error_codes[$member['submissions'][0]['status']].'">'.$member['submissions'][0]['status'].'</a>':'<a href="#" title="'.$error_codes[0].'">0</a>')
+																		// (!empty($member['submissions'])?'<a href="#" title="'.$error_codes[$member['submissions'][0]['status']].'">'.$member['submissions'][0]['status'].'</a>':'<a href="#" title="'.$error_codes[0].'">0</a>')
+																	);
+																	?>
+																</li>
+															<? } else { ?>
+																<? // these users should be complete ?>
+																<li><?=$member['email']?> is status <?=$member['status']?>.</li>
+															<? } // empty($member['status']) ?>
+														<? } // $directors_package['members'] as $member ?>
+														</ul>
+													</div>
+												<? endif; // !empty($directors_package['members']) ?>
+												<? $j++; ?>
+											<? else: ?>
+												<p>Displaying complete ID Pal tasks:</p>
+											<? endif; // empty($directors_package['status']) ) ?>
+										</div>
+									</td>
+								</tr>
+							<? $i++; endforeach; // foreach ($clients as $client) ?>
+						</tbody>
+					</table>
+				</div> <!-- .table-responsive -->
 			<? else: ?>
 				<p>There are currently no outstanding ÌD-Pal tasks.</p>
 			<? endif; ?>
-		</div> <!-- user_mandates -->
+		</div> <!-- clients -->
 		<?
 	}
 

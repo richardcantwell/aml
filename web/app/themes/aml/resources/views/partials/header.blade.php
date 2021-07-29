@@ -1,5 +1,8 @@
 <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
-    <a href="{{ home_url('/') }}" class="navbar-brand col-sm-3 col-md-2 mr-0"><img src="{{$data['theme']['logo']['default']}}" class="logo default" alt="{{$data['site']['name']}} Home" /></a>
+    <a href="{{ home_url('/') }}" class="navbar-brand col-sm-3 col-md-2 mr-0">
+        {{$data['site']['name']}}
+        <!--<img src="{{$data['theme']['logo']['default']}}" class="logo default" alt="{{$data['site']['name']}} Home" />-->  
+    </a>
     <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
     <ul class="navbar-nav px-3">
         <li class="nav-item text-nowrap">
@@ -14,7 +17,6 @@
         {!! wp_nav_menu(['theme_location' => 'primary_navigation', 'menu_class' => 'nav']) !!}
     @endif
 </nav>
-
 <!-- <header class="masthead mb-auto">
     <div class="inner">
         <h3 class="masthead-brand"><a href="{{ home_url('/') }}"><img src="{{$data['theme']['logo']['default']}}" class="logo default" alt="{{$data['site']['name']}} Home" /></a></h3>
