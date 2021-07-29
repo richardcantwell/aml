@@ -1,0 +1,58 @@
+/*
+* theme vertical spacing - don't really understand how to call spacings yet so just set a theme vertical spacing from $spacer-y
+*/
+
+$space: ($spacer*3); // 1rem*3 // ($spacer-y*3);
+
+/*
+//   xs: 0,
+//   sm: 576px,
+//   md: 768px,
+//   lg: 992px,
+//   xl: 1200px
+*/
+
+// Extra Small devices (portrait phones (<576px))
+@include media-breakpoint-up(xs) {}
+
+// Small devices (landscape phones, 34em (576px) and up)
+@include media-breakpoint-up(sm) {}
+
+// Medium devices (tablets, 48em (768px) and up)
+@include media-breakpoint-up(md) {}
+
+// Large devices (desktops, 62em (992px) and up)
+@include media-breakpoint-up(lg) {}
+
+// Extra large devices (large desktops, 75em (1200px) and up)
+@include media-breakpoint-up(xl) {}
+
+/*
+* Font sizing
+*/
+
+html {font-size: 14px;}
+
+@include media-breakpoint-up(sm) {
+  html {font-size: 16px;}
+}
+
+@include media-breakpoint-up(md) {
+  html {font-size: 16px;}
+}
+
+@include media-breakpoint-up(lg) {
+  html {font-size: 16px;}
+}
+
+/*
+* Spacings
+*/
+
+h1, h2, h3, h4, h5, .h1, .h2, .h3, .h4, .h5 {
+    margin-bottom: ($spacer*2); // 32px@16px
+}
+
+p, li, hr {
+    margin-bottom: $spacer;
+}

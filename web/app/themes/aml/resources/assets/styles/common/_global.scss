@@ -1,0 +1,91 @@
+/*
+* Globals
+*/
+
+// Links
+a,
+a:focus,
+a:hover {
+    color: #fff;
+}
+
+/*
+* Base structure
+*/
+
+html,
+body {
+    height: 100%;
+    background-color: #333;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    color: #fff;
+}
+
+.cover-container {
+    max-width: 42em;    // 42em 
+   // min-width: 30rem;
+}
+
+/*
+* Header
+*/
+.masthead {}
+
+.masthead-brand {
+    margin-bottom: 0;
+}
+
+.nav-masthead li.menu-item a {
+    padding: .25rem 0;
+    font-weight: 700;
+    color: rgba(255, 255, 255, .5);
+    background-color: transparent;
+    border-bottom: .25rem solid transparent;
+}
+
+.nav-masthead li.menu-item a:hover,
+.nav-masthead li.menu-item a:focus {
+    border-bottom-color: rgba(255, 255, 255, .25);
+}
+
+.nav-masthead .active {
+    color: #fff;
+    border-bottom-color: #fff;
+}
+
+@media (min-width: 48em) {
+    .masthead-brand {
+        float: left;
+    }
+    .nav-masthead {
+        float: right;
+    }
+}
+
+/*
+* Main
+*/
+
+.main {
+    text-align: center; min-width: 30rem;
+    form { text-align: left; }
+    .gform_wrapper {
+        margin-top: 5rem;
+        margin-bottom: 5rem;
+    }
+    &.cover {}
+    .page-header { display: none;}
+}
+
+
+/*
+* Footer
+*/
+
+.mastfoot {
+    margin-top: 5rem; color: rgba(255, 255, 255, .5);
+}

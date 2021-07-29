@@ -1,0 +1,501 @@
+
+.gform_wrapper {
+    margin-bottom: 0;
+    /* Pages */
+    .gf_page_steps {
+        text-align: center;
+        margin-bottom: 1em;
+        .gf_step {
+            text-align: center;
+            color: #fff;
+            padding: 20px 30px;
+            display: inline-block;
+            background-color: grays(700);
+            span.gf_step_number,
+            span.gf_step_label {
+                color: #fff;
+            }
+        }
+        .gf_step.gf_step_active {
+            background-color: grays(700)-light;
+            color: #fff;
+            span.gf_step_label {}
+            span.gf_step_number {}
+        }
+        .gf_step.gf_step_first {}
+        .gf_step_clear {
+            @extend .clearfix;
+        }
+    }
+    .gf_progressbar_wrapper {
+        text-align:center;
+        margin-bottom: 1em;
+        h3.gf_progressbar_title {
+            margin-bottom: 2rem;
+        }
+        .gf_progressbar {
+            background-color: grays(700);
+            .gf_progressbar_percentage {
+                padding: 10px 0px;
+                background-color: grays(700)-light;
+                span {color:#fff;}
+            }
+        }
+    }
+    /* Heading */
+    .gform_heading {
+        h3.gform_title {}
+        span.gform_description {}
+    }
+    /* Body XXX */
+    .gform_body {
+        ul {
+            @extend .list-unstyled;
+        }
+        li {
+            @extend .form-group;
+            &.gfield {
+                padding-left: 0px;
+                padding-right: 0px;
+                &.gsection {
+                    /*border-bottom: 1px dotted grays(700)-light;*/
+                    border-bottom: 1px solid #d0d0d0 !important;
+                    margin: 16px 0;
+                    padding: 0 0 8px;
+                    @extend .clearfix;
+                    .gsection_title {}
+                    .gsection_description {}
+                }
+                label {
+                    &.gfield_label {
+                        span.gfield_required {
+                            padding-left: 1px;
+                            color: theme-color("danger");
+                        }
+                        &.gfield_label_before_complex {}
+                    }
+                }
+                .ginput_container {
+                    @extend .clearfix;
+                    input,
+                    select,
+                    textarea {
+                        @extend .form-control;
+                    }
+                    input[type='checkbox'],
+                    input[type='radio'] {
+                        width: auto;
+                    }
+                    textarea {
+                        height: auto;
+                    }
+                    ul.gfield_checkbox {
+                        li {
+                            @extend .clearfix;
+                            margin-bottom: 0;
+                            input[type="checkbox"] {
+                                float: left;
+                                margin-top: 0px;
+                                margin-right: 10px;
+                                height: 20px;
+                                &:hover {
+                                    cursor: pointer;
+                                }
+                                label {
+                                    display: inline-block;
+                                    line-height: 1.5;
+                                    margin: 2px 0 0 10px;
+                                    padding: 0;
+                                    vertical-align: top;
+                                    width: auto;
+                                    &:hover {
+                                        cursor: pointer;
+                                    }
+                                }
+                            }
+                            input:checked + label {
+                                font-weight: bold;
+                            }
+                        }
+                    }
+                    .ui-datepicker-trigger {
+                        width: auto;
+                    }
+                    &.ginput_list {
+                        table.gfield_list {
+                            @extend .table;
+                        }
+                    }
+                    &.ginput_container_radio {
+                        ul.gfield_radio {
+                            li {
+                                @extend .clearfix;
+                                margin-bottom: 0;
+                                input[type="radio"] {
+                                    float: left;
+                                    margin-top: 0px;
+                                    margin-right: 10px;
+                                    height: 20px;
+                                    &:hover {
+                                        cursor: pointer;
+                                    }
+                                    label {
+                                        display: inline-block;
+                                        line-height: 1.5;
+                                        margin: 2px 0 0 10px;
+                                        padding: 0;
+                                        vertical-align: top;
+                                        width: auto;
+                                        &:hover {
+                                            cursor: pointer;
+                                        }
+                                    }
+                                }
+                                input:checked + label {
+                                    font-weight: bold;
+                                }
+                            }
+                        }
+                    }
+                    &.ginput_container_checkbox {
+                        ul.gfield_checkbox {
+                            li {}
+                        }
+                    }
+                    &.ginput_complex {
+                        border-left: 0;
+                        display: block;
+                        padding: 10px 0 0 0;
+                        span.ginput_full {}
+                        span.ginput_left {
+                            input {}
+                        }
+                        span.ginput_right {
+                            input {}
+                        }
+                        &.gf_name_has_2 {
+                            @include media-breakpoint-up(md) {
+                                @include make-row();
+                            }
+                            span.name_first,
+                            span.name_last {
+                                @include media-breakpoint-up(md) {@include make-col-ready();@include make-col(6); padding-right: 0;}
+                            }
+                            span.name_first {}
+                            span.name_last {}
+                        }
+                        &.gf_name_has_3 {
+                            @include media-breakpoint-up(md) {
+                                @include make-row();
+                            }
+                            span.name_prefix {
+                                @media (max-width: 48em) {@include make-col-ready();@include make-col(2);}
+                            }
+                            span.name_first,
+                            span.name_last {@media (max-width: 48em) {@include make-col-ready();@include make-col(5);}}
+                            span.name_prefix {}
+                            span.name_last {}
+                        }
+                    }
+                    &.ginput_container_creditcard {
+                        .ginput_full {
+                            .gform_card_icon_container {
+                                margin: 8px 0 6px;
+                                height: 32px;
+                                .gform_card_icon {
+                                    margin-right: 4px;
+                                    text-indent: -9000px;
+                                    //background-image: url('../images/package/gravity_forms/gf-creditcard-icons.png');
+                                    background-repeat: no-repeat;
+                                    width: 36px;
+                                    height: 32px;
+                                    float: left;
+                                    &.gform_card_icon_amex {
+                                        background-position: -72px 0;
+                                    }
+                                    &.gform_card_icon_discover {
+                                        background-position: -108px 0;
+                                    }
+                                    &.gform_card_icon_mastercard {
+                                        background-position: -36px 0;
+                                    }
+                                    &.gform_card_icon_visa {
+                                        background-position: 0 0;
+                                    }
+                                    &.gform_card_icon_maestro {
+                                        background-position: -144px 0;
+                                    }
+                                    &.gform_card_icon_jcb {
+                                        background-position: -180px 0;
+                                    }
+                                    &.gform_card_icon_inactive {
+                                        opacity: 0.5;
+                                    }
+                                }
+                            }
+                        }
+                        .ginput_cardextras {
+                            span.ginput_cardinfo_left {
+                                display: inline-block;
+                                width: 60%;
+                                vertical-align: top;
+                                span.ginput_card_expiration_container {
+                                    select.ginput_card_expiration_month,
+                                    select.ginput_card_expiration_year {
+                                        max-width: 50%;
+                                        //	@include media-breakpoint-up(md) {@include make-col(6);}
+                                    }
+                                }
+                                label {
+                                    clear: both;
+                                }
+                            }
+                            span.ginput_cardinfo_right {
+                                display: inline-block;
+                                width: 40%;
+                                min-height: 43px;
+                                padding-left: 0;
+                                position: relative;
+                                //@include make-md-column(3); // - dont want float
+                                .ginput_card_security_code {
+                                    width: 50px;
+                                    display: inline-block;
+                                }
+                                span.ginput_card_security_code_icon {
+                                    width: 32px;
+                                    height: 23px;
+                                    //background-image: url('../images/package/gravity_forms/gf-creditcard-icons.png');
+                                    background-repeat: no-repeat;
+                                    background-position: 0 -128px;
+                                    position: relative;
+                                    display: inline-block;
+                                    zoom: 1;
+                                }
+                            }
+                        }
+                    }
+                    &.ginput_container_date {
+                        .clear-multi {
+                            margin-left: 0px;
+                            margin-right: 0px;
+                        }
+                        .datepicker {
+                            &.datepicker_with_icon {
+                                &.hasDatepicker {
+                                    display: inline-block;
+                                    margin-right: 2%;
+                                    width: 90%;
+                                }
+                            }
+                        }
+                    }
+                    &.ginput_container_fileupload {
+                        .gform_fileupload_multifile {
+                            .gform_drop_area {
+                                .gform_drop_instructions {
+                                    display: block; font-size: $font-size-sm; margin: 3px;
+                                }
+                                .gform_button_select_files {}
+                            }
+                        }
+                    }
+                    span.ginput_left,
+                    span.ginput_right {
+                        @include media-breakpoint-up(md) {
+                            @include make-col-ready();
+                            @include make-col(6);
+                        }
+                    }
+                    span.ginput_left {}
+                    span.ginput_right {}
+                    } /* .ginput_container */
+                    .ginput_preview {
+                        .gform_delete {}
+                    }
+                    .clear-multi {
+                        @extend .clearfix;
+                        @include media-breakpoint-up(md) {
+                            @include make-row();
+                        }
+
+                        .gfield_time_hour {}
+                        .gfield_time_minute {}
+                        .gfield_time_ampm {}
+
+                        .gfield_time_hour,
+                        .gfield_time_minute,
+                        .gfield_time_ampm {
+                            @include media-breakpoint-up(md) {
+                                @include make-col-ready();
+                                @include make-col(3);
+                            }
+                        }
+                        .gfield_time_hour {}
+                        .gfield_time_ampm {}
+                    }
+                    /* .clear-multi */
+                    &.gf_inline {
+                        display: inline-block;
+                        float: none;
+                        vertical-align: top;
+                        width: auto;
+                    }
+                    .description,
+                    .gfield_description,
+                    .gsection_description,
+                    .ginput_container label,
+                    .ginput_complex label,
+                    .gfield_time_hour label,
+                    .gfield_time_minute label,
+                    .gfield_date_month label,
+                    .gfield_date_day label,
+                    .gfield_date_year label,
+                    .gfield_password_strength,
+                    .instruction {
+                        display: block;
+                        font-size: $font-size-sm;
+                        margin: 3px;
+                    }
+                    // ready classes (https://www.gravityhelp.com/css-ready-classes-for-gravity-forms/)
+                    &.gf_left_third,
+                    &.gf_middle_third,
+                    &.gf_right_third {
+                        @include media-breakpoint-up(md) {@include make-col(4);}
+                    }
+                    &.gf_list_inline {
+                        ul.gfield_checkbox li,
+                        ul.gfield_radio li {
+                            display: inline-block;
+                            margin: 0 10px 10px 0;
+                        }
+                    }
+                    &.gf_list_2col {
+                        ul.gfield_checkbox li,
+                        ul.gfield_radio li {
+                            margin: 0;
+                            min-height: 1.8em;
+                            @include media-breakpoint-up(md) {@include make-col(6);}
+                            @media (max-width: 48em) {
+                                display: inline-block;
+                            }
+                        }
+                    }
+                    &.gf_list_3col {
+                        ul.gfield_checkbox li,
+                        ul.gfield_radio li {
+                            margin: 0;
+                            min-height: 1.8em;
+                            @include media-breakpoint-up(md) {@include make-col(4);}
+                            @media (max-width: 48em) {
+                                display: inline-block;
+                            }
+                        }
+                    }
+                    &.gf_list_4col {
+                        ul.gfield_checkbox li,
+                        ul.gfield_radio li {
+                            margin: 0;
+                            min-height: 1.8em;
+                            @include media-breakpoint-up(md) {@include make-col(3);}
+                            @media (max-width: 48em) {
+                                display: inline-block;
+                            }
+                        }
+                    }
+                    &.gf_left_half,
+                    &.gf_right_half {
+                        @include media-breakpoint-up(md) {@include make-col(6);}
+                    }
+                    &.gf_three_quarter {
+                        @include media-breakpoint-up(md) {@include make-col(9);}
+                    }
+                    &.gfield_visibility_hidden {display:none;} // field marked as hidden
+                    &.gform_validation_container { display: none; } // honeypot
+                    &.payment_fields {
+                        &.gfield_creditcard_warning  {
+                            .gfield_creditcard_warning_message {
+                                @extend .alert;
+                                @extend .alert-danger;
+                            }
+                            .ginput_container  {
+                                .ginput_container_creditcard {}
+                            }
+                        }
+                    }
+                    &.gfield_visibility_hidden {
+                      display: none;
+                    }
+                }
+                &.gform_validation_container {
+                     // honeypot
+                    display: none !important; position: absolute !important; left: -9000px;
+                }
+            }
+            /* li */
+            .gform_page {
+                .gform_page_fields {}
+                .gform_page_footer {
+                    margin-top: $space;
+                    .gform_next_button, .gform_previous_button, .gform_button {
+                        @extend .btn, .btn-lg; height: auto; width: auto;
+                    }
+                    .gform_previous_button { @extend .btn-light; }
+                    .gform_next_button { @extend .btn-primary; } // .btn-primary is blue
+                    .gform_button { @extend .btn-secondary;} // .btn-secondary is pink
+                }
+            }
+        }
+        /* .gform_body */
+        /* Footer */
+        .gform_footer {
+            margin-top: 40px;
+            text-align: right;
+            .gform_button {
+                @extend .btn; @extend .btn-primary; @extend .btn-lg;
+                border-radius: 35px !important;
+                /*height: auto; width: auto;*/
+                height: 62px;
+                width: 181px;
+            }
+            .gform_ajax_spinner {}
+        }
+        /* gform_footer */
+        /* Validation*/
+        &.gform_validation_error {
+            .validation_error {
+                @extend .alert;
+                @extend .alert-danger;
+            }
+            .gfield {
+                &.gfield_error {
+                    @extend .alert;
+                    @extend .alert-danger;
+                    .gfield_label {
+                        color: theme-color("danger");
+                    }
+                    input,
+                    select,
+                    textarea {
+                        border-color: theme-color("danger");
+                        background-color: $white;
+                        color: theme-color("danger");
+                    }
+                }
+            }
+        }
+    }
+
+    /* Confirmation */
+
+    .gform_confirmation_wrapper {
+        .gform_confirmation_message {
+            @extend .alert;
+            @extend .alert-success;
+        }
+    }
+
+/* Honey-Pot Hide
+
+#field_X_Y {
+display:none !important;
+} */

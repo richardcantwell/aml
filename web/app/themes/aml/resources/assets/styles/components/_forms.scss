@@ -1,0 +1,151 @@
+/** Search form */
+.search-form {
+  @extend .form-inline;
+}
+
+.search-form label {
+  @extend .form-group;
+
+  font-weight: normal;
+}
+
+.search-form .search-field {
+  @extend .form-control;
+}
+
+.search-form .search-submit {
+  @extend .btn;
+  @extend .btn-secondary;
+}
+
+/*
+*
+*/
+
+input[type='text'],
+input[type='email'],
+input[type='password'],
+input[type='tel']{
+    //height: 45px;
+}
+select {
+    //height: 55px;
+}
+input[type='checkbox'],
+input[type='radio'],
+textarea,
+select {}
+select[multiple] {}
+
+input[type='text'],
+input[type='email'],
+input[type='password'] {}
+
+select {}
+textarea {}
+
+input[type='checkbox'],
+input[type='radio'] {}
+
+input[type='text'],
+input[type='email'],
+input[type='password'],
+select,
+textarea {
+    padding-left: 0px;
+}
+
+select[multiple] {}
+
+input[type='text']:focus,
+input[type='email']:focus,
+input[type='password']:focus,
+textarea:focus {
+    color: $gray-700;
+    padding-left: 0.75rem;
+    border: 0;
+}
+
+/*
+*
+*/
+
+.tml {
+    &.tml-login {
+        form {
+            .tml-field-wrap {}
+            button.tml-button {
+                @extend .btn, .btn-primary;
+            }
+        }
+        ul.tml-links {
+            list-style: none; padding-left: 0;
+        }
+    }
+}
+
+/*
+* Profile Press
+*/
+
+.pp-login-form-wrap {
+    form {
+        .ppress-form-bottom-links { display: none; }
+    }
+}
+
+/*
+* Gravity Forms
+*/
+
+body.home main p.log_in_message {
+    background-color: #656565;
+    color: $body-color;
+    padding: 3rem;
+}
+
+.gform_wrapper {
+    .gform_body {
+        ul {}
+        li {
+            &.gfield {
+                &.gsection {}
+                label.gfield_label {}
+                .ginput_container {
+                    input[type='text'],
+                    input[type='email'],
+                    input[type='password'],
+                    input[type='tel'] {}
+                    input[type='checkbox'],
+                    input[type='radio'],
+                    textarea,
+                    select {}
+                    select[multiple] {}
+
+                    input[type='text'],
+                    input[type='email'],
+                    input[type='password'] {}
+
+                    select {}
+                    textarea {}
+
+                    input[type='checkbox'],
+                    input[type='radio'] {}
+
+                    input[type='text'],
+                    input[type='email'],
+                    input[type='password'],
+                    select,
+                    textarea {}
+
+                    select[multiple] {}
+
+                    input[type='text']:focus,
+                    input[type='email']:focus,
+                    input[type='password']:focus,
+                    textarea:focus {}
+                }
+            }
+        }
+    }
+}
