@@ -26,7 +26,7 @@ class App extends Controller
             ],
             'theme' => [
                 'logo' => [
-                    'default'=>\App\asset_path('images/logo-idpal-90.jog'),
+                    'default'=>\App\asset_path('images/logo-idpal-90.jpg'),
                 ],
                 'settings' => $settings,
             ],

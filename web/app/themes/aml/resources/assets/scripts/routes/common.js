@@ -12,7 +12,7 @@ export default {
             var user_id = btn.data('id');
             btn.text('..');
             $.ajax({
-                url: 'https://aml.loc/wp/wp-admin/admin-ajax.php', // aml_vars.ajax_url,
+                url: 'https://aml.tynandillon.ie/wp-admin/admin-ajax.php', // aml_vars.ajax_url,
                 type: 'POST',
                 data: {
                     action: 'idpal_btn_submit_user',
