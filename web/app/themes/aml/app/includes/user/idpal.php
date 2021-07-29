@@ -38,7 +38,7 @@
 		$clients = get_users( $args );
 		// Handy\I_Handy::tip($clients);
 		?>
-		<div class="clients">
+		<div class="clients" style="margin-top:3rem;">
 			<? if ( !empty($clients) ): ?>
 				<div class="table-responsive">
                		<table class="table table-striped table-sm">
@@ -95,17 +95,17 @@
 	                                <td><?=$client_name?></td>
 	                                <td>XX</td>
 	                                <td>XX</td>
-	                                <td><span class="status-<?=$directors_package['status']?>"></td>
+	                                <td><span class="indicator status-<?=$directors_package['status']?>"></span></td>
 	                                <td>
 	                                	<? if ( empty($directors_package['status']) ): ?>
-	                                		<a href="#" class="btn btn-link idpal_btn_submit_user" data-id="<?=$client->ID?>" title="Send this user to ID Pal">Send</a>
+	                                		<a href="#" class="idpal_btn_submit_user" data-id="<?=$client->ID?>" title="Send this user to ID Pal">Send</a>
 	                                	<? else: ?>
-	                                		<a href="#" class="btn btn-link idpal_btn_nudge_user" data-id="<?=$client->ID?>" title="Nudge this user">Nudge</a>
+	                                		<a href="#" class="idpal_btn_nudge_user" data-id="<?=$client->ID?>" title="Nudge this user">Nudge</a>
 	                                	<? endif; ?>
 	                                </td>
                                 </tr>
 								<tr class="hide-table-padding">
-									<td colspan="5">
+									<td colspan="7">
 										<div id="collapse-client-<?=$client->ID?>" class="collapse in p-3">
 											<? if ( empty($directors_package['status']) ): ?>
 												<p>Displaying incomplete ID Pal tasks:</p>
@@ -113,7 +113,7 @@
 													<div class="transaction">
 														<ul>
 														<? foreach ( $directors_package['members'] as $member ) { ?>
-															<span class="indicators"><span class="status-<?=$member['status']?>"></span><span class="step-<?$member['step']?>"></span></span>
+															<span class="indicator status-<?=$member['status']?>"></span><span class="indicator step-<?$member['step']?>"></span>
 															<? if ( empty($member['status']) ) { ?>
 																<? $url_unique_idpal = add_query_arg( 'uuid', $member['uuid'], $url_base_idpal ); // new $member['uuid'] ?>
 																<li>
