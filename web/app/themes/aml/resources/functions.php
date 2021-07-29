@@ -177,7 +177,7 @@ array_map(function ($file) use ($sage_error) {
 
 /*
 *
-*s sddf 
+* 
 *
 */
 
