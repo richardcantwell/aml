@@ -26,7 +26,7 @@ class App extends Controller
             ],
             'theme' => [
                 'logo' => [
-                    'default'=>\App\asset_path('images/logo.svg'), // logo.svg // logo-square.png
+                    'default'=>\App\asset_path('images/logo-idpal-90.jog'),
                 ],
                 'settings' => $settings,
             ],
