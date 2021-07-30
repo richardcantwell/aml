@@ -16,11 +16,13 @@
 
 	/*
 	*
-	* output all director packages in dashboard
+	*
+	* called from the 'clients' block - outputs a table of all clients and their progress
+	*
 	*
 	*/
 	function user_idpal_summary() {
-		$url_base_idpal = 'https://qf97.app.link/0gL69PUUZx';
+		$url_base_idpal = get_field('base_url', 'option');
 		$error_codes = [
 			'No submission received', // 0
 			'No submission received and no errors in technical checks, but report not generated', // 1
@@ -33,7 +35,7 @@
 		    'role'    => 'client',
 		    'orderby' => 'user_nicename',
 		    'order'   => 'ASC',
-		    // 'meta_key' => 'aml_company_directors'
+		    // 'meta_key' => 'aml_company_contacts'
 		);
 		$clients = get_users( $args );
 		// Handy\I_Handy::tip($clients);
@@ -58,7 +60,7 @@
 								<?
 								$business_name = get_user_meta($client->ID, 'aml_business_name', true);
 								$client_name = $client->display_name . ( !empty($business_name) ? ' ('.$business_name.')':''); 
-								$directors_package = get_user_meta($client->ID, 'aml_company_directors', true); //Handy\I_Handy::tip($directors_package);
+								$contacts_package = get_user_meta($client->ID, 'aml_company_contacts', true); Handy\I_Handy::tip($contacts_package);
 								/*
 								   [status] => 1|0
 								   [entry_id] =>
@@ -95,9 +97,9 @@
 	                                <td><?=$client_name?></td>
 	                                <td>XX</td>
 	                                <td>XX</td>
-	                                <td><span class="indicator status-<?=$directors_package['status']?>"></span></td>
+	                                <td><span class="indicator status-<?=$contacts_package['status']?>"></span></td>
 	                                <td>
-	                                	<? if ( empty($directors_package['status']) ): ?>
+	                                	<? if ( empty($contacts_package['status']) ): ?>
 	                                		<a href="#" class="idpal_btn_submit_user" data-id="<?=$client->ID?>" title="Send this user to ID Pal">Send</a>
 	                                	<? else: ?>
 	                                		<a href="#" class="idpal_btn_nudge_user" data-id="<?=$client->ID?>" title="Nudge this user">Nudge</a>
@@ -107,20 +109,21 @@
 								<tr class="hide-table-padding">
 									<td colspan="7">
 										<div id="collapse-client-<?=$client->ID?>" class="collapse in p-3">
-											<? if ( empty($directors_package['status']) ): ?>
-												<p>Displaying incomplete ID Pal tasks:</p>
-												<? if ( !empty($directors_package['members']) ): ?>
+											<? if ( empty($contacts_package['status']) ): ?>
+												<!-- <p>Displaying incomplete ID Pal tasks:</p> -->
+												<? if ( !empty($contacts_package['members']) ): ?>
 													<div class="transaction">
-														<ul>
-														<? foreach ( $directors_package['members'] as $member ) { ?>
-															<span class="indicator status-<?=$member['status']?>"></span><span class="indicator step-<?$member['step']?>"></span>
+														<ul class="list-unstyled">
+														<? foreach ( $contacts_package['members'] as $member ) { ?>
 															<? if ( empty($member['status']) ) { ?>
+																<? // Handy\I_Handy::tip($member); ?>
 																<? $url_unique_idpal = add_query_arg( 'uuid', $member['uuid'], $url_base_idpal ); // new $member['uuid'] ?>
 																<li>
+																	<span class="indicator status-<?=$member['status']?>"></span><span class="indicator step-<?$member['step']?>"></span>
 																	<?
 																	echo sprintf("User <a href='mailto:%1s' title='%2s' target='_blank'>%3s</a>, started %4s%5s (AML package step <a href='#' title='%6s'>%7s</a>) has currently ID-Pal status %8s.",
 																		$member['email'].'?subject='.urlencode('ID Verification Outstanding').'&body=Please complete your ID Verification using your unique ID-Pal URL unique ID Pal URL '.$url_unique_idpal.'.',
-																		print_r($member,1),
+																		'', //print_r($member,1),
 																		$member['email'],
 																		date('Y-m-d H:i:s', $member['started']),
 																		(!empty($member['updated'])?', updated '.date('Y-m-d H:i:s', $member['updated']):''),
@@ -135,14 +138,14 @@
 																<? // these users should be complete ?>
 																<li><?=$member['email']?> is status <?=$member['status']?>.</li>
 															<? } // empty($member['status']) ?>
-														<? } // $directors_package['members'] as $member ?>
+														<? } // $contacts_package['members'] as $member ?>
 														</ul>
 													</div>
-												<? endif; // !empty($directors_package['members']) ?>
+												<? endif; // !empty($contacts_package['members']) ?>
 												<? $j++; ?>
 											<? else: ?>
 												<p>Displaying complete ID Pal tasks:</p>
-											<? endif; // empty($directors_package['status']) ) ?>
+											<? endif; // empty($contacts_package['status']) ) ?>
 										</div>
 									</td>
 								</tr>
@@ -170,30 +173,30 @@
 			// enter this user into the funnel
 			$user_obj = get_user_by('id', $user_id);
 			submit_to_idpal($user_id, [$user_obj->user_email]);
-			$directors = get_user_meta( $user_id, 'aml_company_directors', true);
-			Handy\I_Handy::tip($directors);
+			$contacts = get_user_meta( $user_id, 'aml_company_contacts', true);
+			Handy\I_Handy::tip($contacts);
 		}
 		die();
 	}
 	/*
 	*
-	* Director form hooks
+	* Contact form hooks
 	*
-	add_action( 'init', __NAMESPACE__ . '\\director_form_hooks', 11);
-	function director_form_hooks () {
+	add_action( 'init', __NAMESPACE__ . '\\contact_form_hooks', 11);
+	function contact_form_hooks () {
 		$fid = App\themeSettings('theme_idpal_limited_fid');
 		if ( !empty($fid) ):
 			// after submission
-			add_filter( "gform_after_submission_{$fid}", __NAMESPACE__ . '\\create_director_package', 10, 2 );
+			add_filter( "gform_after_submission_{$fid}", __NAMESPACE__ . '\\create_contact_package', 10, 2 );
 			// add_filter( "gform_confirmation_{$ofid}", __NAMESPACE__ . '\\confirmation_manual_onboarding', 10, 4 ); // perhaps instruct client service agent about something - ie what's been done
 		endif;
-		// add_filter( "gform_after_submission_81", __NAMESPACE__ . '\\create_director_package', 10, 2 ); // test IDPal form
+		// add_filter( "gform_after_submission_81", __NAMESPACE__ . '\\create_contact_package', 10, 2 ); // test IDPal form
 	}
 	*/
 	/*
 	*
 	* this hook listens to 'all' (change so that all forms can access - 09/2019) form submissions and checks for the presence of 'fieldXXXX' css selectors - then if
-	* present creates a directors package 'aml_company_directors' which is queried every our by a CRON ('aml_cron_idpal_get_progress_uuids') to be used with ID Pal
+	* present creates a contacts package 'aml_company_contacts' which is queried every our by a CRON ('aml_cron_idpal_get_progress_uuids') to be used with ID Pal
 	*
 	* array [
 	* 	status
@@ -228,33 +231,33 @@
 	*  	]
 	* ]
 	*/
-	//add_filter( "gform_after_submission", __NAMESPACE__ . '\\create_director_package', 10, 2 );
-	function create_director_package ($entry, $form) {
+	//add_filter( "gform_after_submission", __NAMESPACE__ . '\\create_contact_package', 10, 2 );
+	function create_contact_package ($entry, $form) {
 		// die('here');
 		$debug_ips = Debug\get_debug_ips();
 		if ( is_user_logged_in() ) {
     		$current_user = wp_get_current_user();  // Handy\I_Handy::tip($current_user); die();
     		$user_roles = (array) $current_user->roles;
     		if ( in_array( 'client', $user_roles ) || in_array( 'administrator', $user_roles ) ) {
-    			// 1. store 'aml_company_directors' meta (if there is submitted meta)
+    			// 1. store 'aml_company_contacts' meta (if there is submitted meta)
     			$emails = [];
 				$search_fields = [
-					'fieldClientDirector1' => 'fieldClientDirector1',
-					'fieldClientDirector2' => 'fieldClientDirector2',
-					'fieldClientDirector3' => 'fieldClientDirector3',
-					'fieldClientDirector4' => 'fieldClientDirector4',
-					'fieldClientDirector5' => 'fieldClientDirector5',
+					'fieldClientContact1' => 'fieldClientContact1',
+					'fieldClientContact2' => 'fieldClientContact2',
+					'fieldClientContact3' => 'fieldClientContact3',
+					'fieldClientContact4' => 'fieldClientContact4',
+					'fieldClientContact5' => 'fieldClientContact5',
 				];
 				$matches = GravityForms\getGfValuesBy($search_fields, $form, 'css'); 
-				// if ( in_array($_SERVER['REMOTE_ADDR'], $debug_ips) ) { Handy\I_Handy::tip($matches); die('DEBUGGING --- create_director_package() --- DEBUGGING'); }
-				if ( !empty($matches['fieldClientDirector1']) ) array_push($emails, rgar($entry, $matches['fieldClientDirector1']));
-				if ( !empty($matches['fieldClientDirector2']) ) array_push($emails, rgar($entry, $matches['fieldClientDirector2']));
-				if ( !empty($matches['fieldClientDirector3']) ) array_push($emails, rgar($entry, $matches['fieldClientDirector3']));
-				if ( !empty($matches['fieldClientDirector4']) ) array_push($emails, rgar($entry, $matches['fieldClientDirector4']));
-				if ( !empty($matches['fieldClientDirector5']) ) array_push($emails, rgar($entry, $matches['fieldClientDirector5']));
-				// if ( in_array($_SERVER['REMOTE_ADDR'], $debug_ips) ) { Handy\I_Handy::tip($emails); die('DEBUGGING --- create_director_package() --- DEBUGGING'); }
+				// if ( in_array($_SERVER['REMOTE_ADDR'], $debug_ips) ) { Handy\I_Handy::tip($matches); die('DEBUGGING --- create_contact_package() --- DEBUGGING'); }
+				if ( !empty($matches['fieldClientContact1']) ) array_push($emails, rgar($entry, $matches['fieldClientContact1']));
+				if ( !empty($matches['fieldClientContact2']) ) array_push($emails, rgar($entry, $matches['fieldClientContact2']));
+				if ( !empty($matches['fieldClientContact3']) ) array_push($emails, rgar($entry, $matches['fieldClientContact3']));
+				if ( !empty($matches['fieldClientContact4']) ) array_push($emails, rgar($entry, $matches['fieldClientContact4']));
+				if ( !empty($matches['fieldClientContact5']) ) array_push($emails, rgar($entry, $matches['fieldClientContact5']));
+				// if ( in_array($_SERVER['REMOTE_ADDR'], $debug_ips) ) { Handy\I_Handy::tip($emails); die('DEBUGGING --- create_contact_package() --- DEBUGGING'); }
 				if ( !empty($emails) ) {
-					// error_log('[user.php -> create_director_package()] emails: ' . print_r($emails,1));
+					// error_log('[user.php -> create_contact_package()] emails: ' . print_r($emails,1));
 					// Handy\I_Handy::tip($emails); die();
 					submit_to_idpal($current_user->ID, $emails, [ 'entry_id' => $entry['id'] ]);
 				} // !empty($emails)
@@ -270,9 +273,12 @@
 	*/
 	add_action('template_redirect', __NAMESPACE__ . '\\output_debug');
 	function output_debug () {
-		submit_to_idpal (4, ['liverpoolrc@gmail.com']);
-		//$profiles = IdPal\getAppProfiles();
-		//Handy\I_Handy::tip($profiles); die();
+		$debug_ips = Debug\get_debug_ips();
+		if ( in_array($_SERVER['REMOTE_ADDR'], $debug_ips) ) {
+			//submit_to_idpal (4, ['liverpoolrc@gmail.com']);
+			//$profiles = IdPal\getAppProfiles();
+			//Handy\I_Handy::tip($profiles); die();
+		}
 	}
 	/*
 	*
@@ -280,19 +286,21 @@
 	*/
 	function submit_to_idpal ($user_id, $emails, $args = []) {
 		if ( empty($user_id) ) return;
-		// error_log('[user.php -> create_director_package()] emails: ' . print_r($emails,1));
+		$debug_ips = Debug\get_debug_ips(); // if ( in_array($_SERVER['REMOTE_ADDR'], $debug_ips) ) {}
+		// error_log('[user.php -> create_contact_package()] emails: ' . print_r($emails,1));
 		// Handy\I_Handy::tip($emails); die();
 		$admin_email = get_option( 'admin_email' );
 		$site_title = get_bloginfo( 'name' );
 		$site_url = get_bloginfo( 'url' );
-		$directors = [
+		$url_base_idpal = get_field('base_url', 'option');
+		$contacts = [
 			'status' => 0,
 			'entry_id' => (!empty($args['entry_id'])?$entry['id']:null), // if this is form submission record the entry
 			'members' => [],
 		];
 		foreach ($emails as $email) {
 			if (!empty($email)) {
-				$director = [
+				$contact = [
 					'email' => $email,
 					'status' => 0,
 					'step' => 0, // 0: package created, 1: link sent, 2: docs submitted
@@ -301,28 +309,28 @@
 					//'appinstance' => '', // depreciate eventually - but need to keep for now (API 2.4.1 -> 2.5)
 					'submissions' => [], // none initially
 				];
-				array_push($directors['members'], $director);
+				array_push($contacts['members'], $contact);
 			}
 		}
-		// Handy\I_Handy::tip($directors); die();
-		error_log('create_director_package() called | directors created: ' . print_r($directors, 1));
-		update_user_meta( $user_id, 'aml_company_directors', $directors );
-		// 2. get 'aml_company_directors' - loop and send IDPal URL
-		$directors = get_user_meta( $user_id, 'aml_company_directors', true);
+		// Handy\I_Handy::tip($contacts); die();
+		error_log('create_contact_package() called | contacts created: ' . print_r($contacts, 1));
+		update_user_meta( $user_id, 'aml_company_contacts', $contacts );
+		// 2. get 'aml_company_contacts' - loop and send IDPal URL
+		$contacts = get_user_meta( $user_id, 'aml_company_contacts', true);
 		$business_name = get_user_meta($user_id, 'aml_business_name', true);
-		if ( !empty($directors) ) {
-			if ( empty($directors['status']) ) {
-				$updated_directors = [
-					'status' => $directors['status'],
-					'entry_id' => $directors['entry_id'],
+		if ( !empty($contacts) ) {
+			if ( empty($contacts['status']) ) {
+				$updated_contacts = [
+					'status' => $contacts['status'],
+					'entry_id' => $contacts['entry_id'],
 					'members' => [],
 				];
-				foreach ($directors['members'] as $member) {
-					$updated_director = [];
-					$updated_director = $member;
+				foreach ($contacts['members'] as $member) {
+					$updated_contact = [];
+					$updated_contact = $member;
 					if ( empty($member['status']) ) {
 						$result = IdPal\sendAppLink(); // Handy\I_Handy::tip($result); die();
-						// error_log('user.php -> create_director_package() | IdPal\sendAppLink() -> result: ' . print_r($result,1) );
+						// error_log('user.php -> create_contact_package() | IdPal\sendAppLink() -> result: ' . print_r($result,1) );
 						/*print_r($result,1) Array
 						(
 						    [status] => error
@@ -343,7 +351,7 @@
 								'to' => [$member['email']],
 								'headers' => [
 									'Content-Type' => 'text/html; charset=UTF-8',
-									'Cc: Accountant Online <' . $admin_email . '>',
+									'Cc: ' . $site_title . ' <' . $admin_email . '>',
 									'Cc: Website <hello@hootfish.ie>', // testing
 								],
 								'subject' => 'ID/POA Verification required',
@@ -353,60 +361,61 @@
 									<br /><br />Please %3s to download the ID Pal app for ID verification.
 									<br /><br />This link is valid for 48 hours. We cannot provide services to you until you have completed this process.
 									<br /><br /><strong>Why do we need this from you?</strong>
-									<br /><br />Accountant Online is supervised by %4s and therefore we are required to review and keep ID and proof of address for our clients before providing professional services.
+									<br /><br />We are supervised by %4s and therefore we are required to review and keep ID and proof of address for our clients before providing professional services.
 									<br /><br /><strong>Keeping your data safe</strong>
-									<br /><br />By submitting your ID and proof of address you are agreeing to Accountant Online storing this personal data for as long as you remain a client of Accountant Online and for up to 5 years after in line with guidelines from Chartered Accountants Ireland. We will keep this data in line with our %5s and our %6s.
+									<br /><br />By submitting your ID and proof of address you are agreeing to us storing this personal data for as long as you remain a client of ours for up to 5 years after in line with guidelines from Chartered Accountants Ireland. We will keep this data in line with our %5s and our %6s.
 									<br /><br />Please let us know if you have any questions.",
 									(!empty($business_name)?' (' . $business_name . ')':''),
 									$site_title, // '<a href="'.$site_url.'">'.$site_title.'</a>',
-									'<a href="https://qf97.app.link/0gL69PUUZx?uuid='.$result['response']['uuid'].'">click this link</a>',
+									'<a href="'.$url_base_idpal.'?uuid='.$result['response']['uuid'].'">click this link</a>',
 									'<a href="https://www.charteredaccountants.ie/find-a-Firm/firm-details?firm=lizdan-business-services-ltd-45648">Chartered Accountants Ireland</a>',
 									'<a href="'.$site_url.'/about/privacy/">privacy policy</a>',
 									'<a href="'.$site_url.'/about/gdpr-policies-and-procedures/">GDPR policies and procedures</a>'
 								),
 							];
-							$email_sent = Comms\emailUser($mail_args);
+							// Handy\I_Handy::tip($mail_args); die();
+							$email_sent = Comms\emailUser($mail_args); // Handy\I_Handy::tip($email_sent); die();
 							if ( $email_sent ) {
-								// error_log('Ican\Theme\User\IdPal -> create_director_package() | IdPal\sendAppLink() -> email_sent -> result('.$email_sent.') -> mail args: ' . print_r($mail_args,1) );
-								// email has been sent to this director with unique 'uuid'
-								$updated_director['step'] = 1; // 1: link sent
-								$updated_director['updated'] = time();
-								//$updated_director['appinstance'] = $result['response']['uuid']; // depreciate eventually
-								$updated_director['uuid'] = $result['response']['uuid'];
+								// error_log('Ican\Theme\User\IdPal -> create_contact_package() | IdPal\sendAppLink() -> email_sent -> result('.$email_sent.') -> mail args: ' . print_r($mail_args,1) );
+								// email has been sent to this contact with unique 'uuid'
+								$updated_contact['step'] = 1; // 1: link sent
+								$updated_contact['updated'] = time();
+								//$updated_contact['appinstance'] = $result['response']['uuid']; // depreciate eventually
+								$updated_contact['uuid'] = $result['response']['uuid'];
 							} else {
-								//error_log('Ican\Theme\User | create_director_package(): call to IdPal\sendAppLink() returned error: ' . print_r($result,1));
+								//error_log('Ican\Theme\User | create_contact_package(): call to IdPal\sendAppLink() returned error: ' . print_r($result,1));
 							}
 						} else {
-							//error_log('Ican\Theme\User | create_director_package(): call to IdPal\sendAppLink() with no parameters returned error: ' . print_r($result,1));
+							//error_log('Ican\Theme\User | create_contact_package(): call to IdPal\sendAppLink() with no parameters returned error: ' . print_r($result,1));
 							// try again but this time allow ID-Pal to send the email
 							$result = IdPal\sendAppLink(['information_type' => 'email', 'contact' => $member['email']]); // Handy\I_Handy::tip($result); die();
 							if ($result['status'] == 'success') {
-								// email has been sent to this director with unique 'uuid'
-								$updated_director['step'] = 1; // 1: link sent
-								$updated_director['updated'] = time();
-								//$updated_director['appinstance'] = $result['response']['uuid'];
-								$updated_director['uuid'] = $result['response']['uuid']; // depreciate eventually
+								// email has been sent to this contact with unique 'uuid'
+								$updated_contact['step'] = 1; // 1: link sent
+								$updated_contact['updated'] = time();
+								//$updated_contact['appinstance'] = $result['response']['uuid'];
+								$updated_contact['uuid'] = $result['response']['uuid']; // depreciate eventually
 							} else {
-								//error_log('Ican\Theme\User | create_director_package(): call to IdPal\sendAppLink() with parameters returned error: ' . print_r($result,1));
+								//error_log('Ican\Theme\User | create_contact_package(): call to IdPal\sendAppLink() with parameters returned error: ' . print_r($result,1));
 							}
 						} // !empty($result['response']['uuid'])
 					}
-					array_push($updated_directors['members'], $updated_director);
+					array_push($updated_contacts['members'], $updated_contact);
 				}
-				// Handy\I_Handy::tip($updated_directors); die();
-				update_user_meta( $user_id, 'aml_company_directors', $updated_directors );
-			} // empty($directors['status'])
-		} // !empty($directors)
+				// Handy\I_Handy::tip($updated_contacts); die();
+				update_user_meta( $user_id, 'aml_company_contacts', $updated_contacts );
+			} // empty($contacts['status'])
+		} // !empty($contacts)
 	}
 	/*
 	*
 	* CRON script which runs every 1 hour (** TO BE DEPRECIATED with webhook method process_idpal_webhook_response() **)
 	*
-	* - loops all clients with 'aml_company_directors' meta
-	* - pulls out aml_company_directors
-	* - loops aml_company_directors and call IdPal\AppLinkStatus($uuid) for each director
-	* - if complete - update director status in 'aml_company_directors' and updpate overall status
-	* - if overall status is 1 - trigger aml_company_directors webhook to complete flow, email admin
+	* - loops all clients with 'aml_company_contacts' meta
+	* - pulls out aml_company_contacts
+	* - loops aml_company_contacts and call IdPal\AppLinkStatus($uuid) for each contact
+	* - if complete - update contact status in 'aml_company_contacts' and updpate overall status
+	* - if overall status is 1 - trigger aml_company_contacts webhook to complete flow, email admin
 	*
 	* @triggered by
 	*
@@ -427,7 +436,7 @@
 		$admin_email = get_option( 'admin_email' );
 		$site_url = get_option( 'siteurl' );
 		$clients = get_users([
-		    'meta_key' => 'aml_company_directors'
+		    'meta_key' => 'aml_company_contacts'
 		]);
 		if ( !empty($clients) ) {
 			foreach ($clients as $client) {
@@ -436,34 +445,34 @@
 				* Step 1
 				* ------
 				*
-				* Has this client got directors packet and if so is it 'incomplete'? If 'incomplete' - loop through the directors inside, make a
+				* Has this client got contacts packet and if so is it 'incomplete'? If 'incomplete' - loop through the contacts inside, make a
 				* call to IdPal\AppLinkStatus(uuid) to see what the status of their submissions (ie passport check, address check, likeless check etc) are. If
-				* all their submissions are >4 ('CDD generated and all technical checks passed') then upload this user's status as 'complete' (1) and if all directors
-				* in this packet are complete - update the directors packet status as 'complete' (1)
+				* all their submissions are >4 ('CDD generated and all technical checks passed') then upload this user's status as 'complete' (1) and if all contacts
+				* in this packet are complete - update the contacts packet status as 'complete' (1)
 				*
 				*/
-				$directors = get_user_meta($client->ID, 'aml_company_directors', true);
-				if ( !empty($directors) ) {
-					if ( empty($directors['status']) ) {
-						 // directors are incomplete
-						$updated_directors = [
+				$contacts = get_user_meta($client->ID, 'aml_company_contacts', true);
+				if ( !empty($contacts) ) {
+					if ( empty($contacts['status']) ) {
+						 // contacts are incomplete
+						$updated_contacts = [
 							'status' => 0, // default until proven
-							'entry_id' => $directors['entry_id'],
+							'entry_id' => $contacts['entry_id'],
 							'members' => [],
 						];
-						$os=0;$i=0;foreach ($directors['members'] as $member) { // $os overall status
-							$updated_director = [];
-							$updated_director = $member;
+						$os=0;$i=0;foreach ($contacts['members'] as $member) { // $os overall status
+							$updated_contact = [];
+							$updated_contact = $member;
 							if ( !isset($member['overwritten']) ) {
 								if ( empty($member['status']) ) {
-									// director is incomplete
+									// contact is incomplete
 									// echo $member['appinstance'];
 									// $args = [ 'submission_id' => '9112' ]; $result = IdPal\getCustomerInformation($args); Handy\I_Handy::tip($result);
 									/*$args = [ 'submission_id' => '9500' ]; $result = IdPal\getCDDReport($args); // 4505
 									if ( !empty($result['response']) ) {
 										header('Content-Type: application/pdf'); die($result['response']);
 									}*/
-									// check ID-Pal see if director is now complete?
+									// check ID-Pal see if contact is now complete?
 									// statuses passed into AppLinkStatus()
 									// 0. No submission received
 									// 1. Submission received and no errors in technical checks, but report not generated
@@ -483,8 +492,8 @@
 										// Handy\I_Handy::tip($result); // die(); // see http://prntscr.com/nzzo82 // 9505 | 064a7bc4 |
 									//}
 									if ($result['status'] == 'success') { // we have results (there is a submission entry from $member['uuid'])
-										$updated_director['submissions'] = ( !empty($updated_director['submissions'])?$updated_director['submissions']:[]); // remove older submissions and replace with latest
-										$updated_director['status'] = 0; // status is 0 until proved
+										$updated_contact['submissions'] = ( !empty($updated_contact['submissions'])?$updated_contact['submissions']:[]); // remove older submissions and replace with latest
+										$updated_contact['status'] = 0; // status is 0 until proved
 										if ( !empty($result['response']['submissions']) && is_array($result['response']['submissions']) ) { // to negate 'No submissions recieved' response
 											//$submission_data = [];
 											foreach ($result['response']['submissions'] as $submission) {
@@ -506,12 +515,12 @@
 													// store the $submission['submission_id']
 												}*/
 												if ($member['uuid'] == $submission['uuid']) { // make sure it's a submission into this app instance
-													$updated_director['submissions'][$submission['submission_id']]['status'] = $submission['status'];
-													//if ( isset($updated_director['submissions'][$submission['submission_id']]['submission_complete']) ) { 
+													$updated_contact['submissions'][$submission['submission_id']]['status'] = $submission['status'];
+													//if ( isset($updated_contact['submissions'][$submission['submission_id']]['submission_complete']) ) { 
 														if ( $submission['status'] >=4 ) { // means the submission has been verified by an AO account manager - this is the real completion
-															$updated_director['status'] = 1;  // set this members status to 1
-															$updated_director['step'] = 2; // 2: docs submitted
-															$updated_director['finished'] = time(); // not 100% accurate - within the time between CRON calls
+															$updated_contact['status'] = 1;  // set this members status to 1
+															$updated_contact['step'] = 2; // 2: docs submitted
+															$updated_contact['finished'] = time(); // not 100% accurate - within the time between CRON calls
 															$os++; // add 1 to overall status dd
 														}
 													//}
@@ -523,67 +532,67 @@
 													// choose latest submission - occours in edge case where a user has submitted more than once with the same uuids
 													$submission_data = [end($submission_data)]; // Handy\I_Handy::tip($submission_data);
 												}
-												$updated_director['submissions'] = $submission_data; // Handy\I_Handy::tip($submission_data);
+												$updated_contact['submissions'] = $submission_data; // Handy\I_Handy::tip($submission_data);
 												// die($latest_submission['status']);
 												if ( $submission_data[0]['status'] >=4 ) {
-													$updated_director['status'] = 1;  // set this members status to 1
-													$updated_director['step'] = 2; // 2: docs submitted
-													$updated_director['finished'] = time(); // not 100% accurate - within the time between CRON calls
+													$updated_contact['status'] = 1;  // set this members status to 1
+													$updated_contact['step'] = 2; // 2: docs submitted
+													$updated_contact['finished'] = time(); // not 100% accurate - within the time between CRON calls
 													$os++; // add 1 to overall status dd
 												}
-												// consider overall director status (as can't seem to get a straight result) for their submissions (passport, address, likeness etc)
+												// consider overall contact status (as can't seem to get a straight result) for their submissions (passport, address, likeness etc)
 												//$ms=0;$j=0;foreach ($submission_data as $submission) {
 												// 	if ( $submission['status'] >=4 ) $ms++; // member status
 												//$j++;} echo "<p>$ms|$j</p>";
 												//if ($ms==$j) {
-												//	// director has passed all submissions
-												//	$updated_director['status'] = 1; $os++; // add 1 to overall status
+												//	// contact has passed all submissions
+												//	$updated_contact['status'] = 1; $os++; // add 1 to overall status
 												//}
 											}*/
 										}
 									}
-									// Handy\I_Handy::tip($updated_director); die();
+									// Handy\I_Handy::tip($updated_contact); die();
 								} else {
-									$os++; // uncomment for debugging // overall status // empty($member['status']) // this individual director is 'incomplete'
+									$os++; // uncomment for debugging // overall status // empty($member['status']) // this individual contact is 'incomplete'
 								}
 							} else {
 								 $os++; // member has been overwritten so just pass
 							}
-							array_push($updated_directors['members'], $updated_director);
-						$i++;} // $directors['members'] as $member // for each director in this directors package
-						// echo "$os|$i"; // are all directors complete? if the same - then yes
-						// if ( $debug ) { if ( in_array($_SERVER['REMOTE_ADDR'], $debug_ips) ) { echo "$os|$i"; Handy\I_Handy::tip($updated_directors); }}
+							array_push($updated_contacts['members'], $updated_contact);
+						$i++;} // $contacts['members'] as $member // for each contact in this contacts package
+						// echo "$os|$i"; // are all contacts complete? if the same - then yes
+						// if ( $debug ) { if ( in_array($_SERVER['REMOTE_ADDR'], $debug_ips) ) { echo "$os|$i"; Handy\I_Handy::tip($updated_contacts); }}
 						if ($os==$i) { 
-							$updated_directors['status'] = 1; 
+							$updated_contacts['status'] = 1; 
 						}
-						update_user_meta( $client->ID, 'aml_company_directors', $updated_directors ); // store progress (for dashboard)
-						// check overall status of 'aml_company_directors' and if complete - do follow up tasks
-						if ( $updated_directors['status'] == 1 ) {
+						update_user_meta( $client->ID, 'aml_company_contacts', $updated_contacts ); // store progress (for dashboard)
+						// check overall status of 'aml_company_contacts' and if complete - do follow up tasks
+						if ( $updated_contacts['status'] == 1 ) {
 							// error_log('continue_workflow() called');
 							continue_workflow( $client->ID );
 						}
-						/*if ( $updated_directors['status'] == 1 ) {
-							$directors = get_user_meta($client->ID, 'aml_company_directors', true);
-							if ( !empty($directors) ) {
-								$updated_directors = $directors; // if we need to update anything
-								// directors are all complete - so complete the flow
-								if ( !empty($directors['status']) ) {
+						/*if ( $updated_contacts['status'] == 1 ) {
+							$contacts = get_user_meta($client->ID, 'aml_company_contacts', true);
+							if ( !empty($contacts) ) {
+								$updated_contacts = $contacts; // if we need to update anything
+								// contacts are all complete - so complete the flow
+								if ( !empty($contacts['status']) ) {
 									//$info = [
-									//	'entry_id' => $directors['entry_id'],
+									//	'entry_id' => $contacts['entry_id'],
 									//	'key' => $gflow_webhook['key'],
 									//	'secret' => $gflow_webhook['secret'],
 									//];
-									$response = GravityFlow\incoming_webhook_endpoint_process($directors['entry_id']); // looking for 'complete'
+									$response = GravityFlow\incoming_webhook_endpoint_process($contacts['entry_id']); // looking for 'complete'
 									if ( $response == 'complete' ) { // debugging add 'true' | otherwise $response == 'complete'
 										// Email administrator
 										$business_name = get_user_meta($client->ID, 'aml_business_name', true);
 										$fid = null; // App\themeSettings('theme_idpal_limited_fid');
 										$mail_args = [
 											'to' => $admin_email,
-											'subject' => 'Directors ID-Pal ID/POA submission and verification complete',
+											'subject' => 'Contacts ID-Pal ID/POA submission and verification complete',
 											'body' => sprintf(
-														"Administrator,\n\n All directors in directors package <a href='%1s' target='_blank'>entry</a> initiated by client <a href='mailto:%2s'>%3s %4s</a>%5s have now completed their ID-Pal ID/POA submission and verification. This client has been notified and can now continue with subsequent workflow checklists.",
-														(!empty($fid)?admin_url('admin.php?page=gf_entries&view=entry&id='.$fid.'&lid='.$directors['entry_id']):''),
+														"Administrator,\n\n All contacts in contacts package <a href='%1s' target='_blank'>entry</a> initiated by client <a href='mailto:%2s'>%3s %4s</a>%5s have now completed their ID-Pal ID/POA submission and verification. This client has been notified and can now continue with subsequent workflow checklists.",
+														(!empty($fid)?admin_url('admin.php?page=gf_entries&view=entry&id='.$fid.'&lid='.$contacts['entry_id']):''),
 														$client->user_email,
 														$client->first_name,
 														$client->last_name,
@@ -593,7 +602,7 @@
 										$result = Comms\emailUser($mail_args);
 										// Email user (first user in bundle) and tell them that flow can continue
 										if ( !empty( $client->user_email ) ) {
-											// could also use $updated_directors['members'][0]['email'] - this is assuming that the 'responsible' user is number 1 on the list which is probably not the case - possibly last
+											// could also use $updated_contacts['members'][0]['email'] - this is assuming that the 'responsible' user is number 1 on the list which is probably not the case - possibly last
 											$mail_args = [
 												'to' => $client->user_email,
 												'subject' => 'ID & POA Verification complete',
@@ -606,19 +615,19 @@
 											$result = Comms\emailUser($mail_args);
 										}
 										// store
-										$updated_directors['flow_unlocked'] = time(); update_user_meta( $client->ID, 'aml_company_directors', $updated_directors ); // Update the user so that procedure only happens once
+										$updated_contacts['flow_unlocked'] = time(); update_user_meta( $client->ID, 'aml_company_contacts', $updated_contacts ); // Update the user so that procedure only happens once
 									}
 									// Handy\I_Handy::tip($response);
-								} // !empty($updated_directors['status'])
-							} // !empty($directors) // this client has a directors package
+								} // !empty($updated_contacts['status'])
+							} // !empty($contacts) // this client has a contacts package
 						}*/
-					}  // empty($directors['status']) // directors package is incomplete
-				} // !empty($directors) // this client has a directors package
+					}  // empty($contacts['status']) // contacts package is incomplete
+				} // !empty($contacts) // this client has a contacts package
 			} // foreach ($clients as $client) {
 		} // !empty($clients)
 		// Handy\I_Handy::tip($site_master_history, '213.79.32.115');
 		/*if ( !empty($gflow_webhook['key']) && !empty($gflow_webhook['secret']) ) {
-			// get all clients with 'meta_key' => 'aml_company_directors'
+			// get all clients with 'meta_key' => 'aml_company_contacts'
 		} else {
 			error_log('Ican\Theme\User | queryIdPalStatus: webhook_key & webhook_secret empty.');
 			Comms\emailUser(['to' => ['hello@hootfish.ie'], 'subject' => 'AO Debug', 'body' => 'Ican\Theme\User | queryIdPalStatus() : '.print_r($gflow_webhook,1)]);
@@ -647,11 +656,11 @@
 	}
 	/*
 	*
-	* output incomplete director packages in dashboard
+	* output incomplete contact packages in dashboard
 	*
 	*/
 	function user_idpal_dashboard() {
-		$url_base_idpal = 'https://qf97.app.link/0gL69PUUZx';
+		$url_base_idpal = get_field('base_url', 'option');
 		$error_codes = [
 			'No submission received', // 0
 			'No submission received and no errors in technical checks, but report not generated', // 1
@@ -661,7 +670,7 @@
 			'CDD generated but some technical checks failed (e.g. manual over-ride was used)', // 5
 		];
 		$clients = get_users([
-		    'meta_key' => 'aml_company_directors'
+		    'meta_key' => 'aml_company_contacts'
 		]);
 		// Handy\I_Handy::tip($clients);
 		?>
@@ -669,7 +678,7 @@
 			<? if ( !empty($clients) ) { ?>
 				<? $i=1; foreach ($clients as $client) { ?>
 					<?
-					$directors_package = get_user_meta($client->ID, 'aml_company_directors', true); // Handy\I_Handy::tip($directors_package);
+					$contacts_package = get_user_meta($client->ID, 'aml_company_contacts', true); // Handy\I_Handy::tip($contacts_package);
 					# (
 					#    [status] => 1|0
 					#    [entry_id] =>
@@ -699,13 +708,13 @@
 					#  [flow_unlocked] => 1560186422
 					#
 					?>
-					<? if ( empty($directors_package['status']) ) { ?>
+					<? if ( empty($contacts_package['status']) ) { ?>
 						<? $business_name = get_user_meta($client->ID, 'aml_business_name', true); ?>
-						<p><strong><?=$i?></strong>) Displaying incomplete ID Pal tasks for client <a href="<?=admin_url('user-edit.php?user_id='.$client->ID.'&wp_http_referer=%2Fwp%2Fwp-admin%2Fusers.php')?>" title="User ID: <?=$client->ID?> | Package: <?=print_r($directors_package,1)?>" target="_blank"><?=$client->user_email?></a><?=(!empty($business_name)?' ('.$business_name.')':'')?>:</p>
-						<? if ( !empty($directors_package['members']) ) { ?>
+						<p><strong><?=$i?></strong>) Displaying incomplete ID Pal tasks for client <a href="<?=admin_url('user-edit.php?user_id='.$client->ID.'&wp_http_referer=%2Fwp%2Fwp-admin%2Fusers.php')?>" title="User ID: <?=$client->ID?> | Package: <?=print_r($contacts_package,1)?>" target="_blank"><?=$client->user_email?></a><?=(!empty($business_name)?' ('.$business_name.')':'')?>:</p>
+						<? if ( !empty($contacts_package['members']) ) { ?>
 							<div class="transaction" style="border:1px solid gray; padding: 10px; margin-bottom: 10px;">
 								<ul>
-								<? foreach ( $directors_package['members'] as $member ) { ?>
+								<? foreach ( $contacts_package['members'] as $member ) { ?>
 									<? if ( empty($member['status']) ) { ?>
 										<? $url_unique_idpal = add_query_arg( 'uuid', $member['uuid'], $url_base_idpal ); // new $member['uuid'] ?>
 										<li>
@@ -727,12 +736,12 @@
 										<? // these users should be complete ?>
 										<li><?=$member['email']?> is status <?=$member['status']?>.</li>
 									<? } // empty($member['status']) ?>
-								<? } // $directors_package['members'] as $member ?>
+								<? } // $contacts_package['members'] as $member ?>
 								</ul>
 							</div>
-						<? } // !empty($directors_package['members']) ?>
+						<? } // !empty($contacts_package['members']) ?>
 						<? $i++; ?>
-					<? } // empty($directors_package['status']) ) ?>
+					<? } // empty($contacts_package['status']) ) ?>
 				<? } // foreach ($clients as $client) ?>
 			<? } else { ?>
 				<p>There are currently no outstanding ÌD-Pal tasks.</p>
@@ -765,16 +774,16 @@
 	    	$client_id = $_POST['user_idpal_configure_client_id'];
 	    	$user_email = $_POST['user_idpal_configure_user_email'];
 	    	$submission_id = $_POST['user_idpal_configure_submission_id'];
-    		// 1. mark user_email as complete in this clients directors package
+    		// 1. mark user_email as complete in this clients contacts package
     		$result = user_idpal_manually_complete($client_id, $user_email, $submission_id);
 	    	if ( $result ) {
 		    	// do other stuff
-		    	$message = 'You have manually set client ' . $client_id . 's directors package user <strong>' . $user_email . '</strong> to status <strong>1</strong> (complete).';
+		    	$message = 'You have manually set client ' . $client_id . 's contacts package user <strong>' . $user_email . '</strong> to status <strong>1</strong> (complete).';
 		    	add_action( 'admin_notices', __NAMESPACE__ . '\\output_dashboard_widget_message', $message );
 	    	}
 	    }
 		$clients = get_users([
-		    'meta_key' => 'aml_company_directors'
+		    'meta_key' => 'aml_company_contacts'
 		]);
 	    ?>
 	    <p>Please <a href="#" title="This action should only be taken if theres a valid reason why this user couldn't complete their ID & POA Verification through ID-Pal themselves. If you understand the risks, choose the client and the checklist you want to manually complete.">hover here</a> so that you understand the
@@ -785,9 +794,9 @@
 	        	<select class="widefat" id="user_idpal_configure_client_id" name="user_idpal_configure_client_id">
 	        		<option value="">Select</option>
 		        	<? $i=1; foreach ( $clients as $client ) { ?>
-		        		<? $directors_package = get_user_meta($client->ID, 'aml_company_directors', true); // Handy\I_Handy::tip($directors_package); ?>
+		        		<? $contacts_package = get_user_meta($client->ID, 'aml_company_contacts', true); // Handy\I_Handy::tip($contacts_package); ?>
 		        		<? $business_name = get_user_meta($client->ID, 'aml_business_name', true); ?>
-		        		<? if ( empty($directors_package['status']) ) { ?>
+		        		<? if ( empty($contacts_package['status']) ) { ?>
 		        			<option value="<?=$client->ID?>"><?=$client->user_email?><?=(!empty($business_name)?' ('.$business_name.')':'')?></option>
 		        		<? } ?>
 		        	<? $i++; } // $clients as $client ?>
@@ -812,7 +821,7 @@
 	}
 	/*
 	*
-	* manually complete a user in an ID-Pal directors package
+	* manually complete a user in an ID-Pal contacts package
 	*
 	* @called:
 	*
@@ -827,44 +836,44 @@
     		$current_user = wp_get_current_user();  // Handy\I_Handy::tip($current_user); die();
     		$user_roles = (array) $current_user->roles;
     		if ( in_array( 'administrator', $user_roles ) ) {
-				$directors_package = get_user_meta($client_id, 'aml_company_directors', true);
-				$updated_directors_package = $directors_package; // copy initally
-				if (!empty($directors_package)) {
-					$debugging_message = '<b>Before</b>' . print_r($directors_package, 1); // Handy\I_Handy::tip($directors_package); die();
-					$i=0;foreach ( $directors_package['members'] as $member ) {
+				$contacts_package = get_user_meta($client_id, 'aml_company_contacts', true);
+				$updated_contacts_package = $contacts_package; // copy initally
+				if (!empty($contacts_package)) {
+					$debugging_message = '<b>Before</b>' . print_r($contacts_package, 1); // Handy\I_Handy::tip($contacts_package); die();
+					$i=0;foreach ( $contacts_package['members'] as $member ) {
 						if ( $member['email'] == $user_email ) {
 							if ( empty($member['status']) ) { // just check - but always should be 0
 								if ( !empty($submission_id ) ) {
 									// softer overide
-									$updated_directors_package['members'][$i]['note'] = 'Submission ID ' . $submission_id . ' manually added ' . date('d-m-Y H:i:s') . ' by ' . $current_user->ID;
+									$updated_contacts_package['members'][$i]['note'] = 'Submission ID ' . $submission_id . ' manually added ' . date('d-m-Y H:i:s') . ' by ' . $current_user->ID;
 									$result = IdPal\getSubmissionsStatus(['submission_id' => $submission_id]); // Handy\I_Handy::tip($result); die(); // example - http://prntscr.com/nzzo82
 									if ( $result['status'] == 'success' ) {
 										if ( !empty($result['response']['submissions']) ) {
 											// update the users UUID from result (and allow hourly CRON to query)
 											if ( !empty($result['response']['submissions'][0]['uuid']) ) { // assuming that we're taken the FIRST submission - but their could be more?
-												$updated_directors_package['members'][$i]['note'] .= ' which replaced uuid ' . (!empty($member['uuid'])?$member['uuid']:'N/A') . '.';
-												//$updated_directors_package['members'][$i]['appinstance'] = $result['response']['submissions'][0]['uuid']; // need to depreciate this for 'uuid' below
-												$updated_directors_package['members'][$i]['uuid'] = $result['response']['submissions'][0]['uuid'];
+												$updated_contacts_package['members'][$i]['note'] .= ' which replaced uuid ' . (!empty($member['uuid'])?$member['uuid']:'N/A') . '.';
+												//$updated_contacts_package['members'][$i]['appinstance'] = $result['response']['submissions'][0]['uuid']; // need to depreciate this for 'uuid' below
+												$updated_contacts_package['members'][$i]['uuid'] = $result['response']['submissions'][0]['uuid'];
 											} else {
-												$updated_directors_package['members'][$i]['note'] .= ' but IDPal/getSubmissionsStatus() - [uuid] not found.';
+												$updated_contacts_package['members'][$i]['note'] .= ' but IDPal/getSubmissionsStatus() - [uuid] not found.';
 											}
 										} else {
-											$updated_directors_package['members'][$i]['note'] .= ' but IDPal/getSubmissionsStatus() returned an error of status ' . $result['response']['status'];
+											$updated_contacts_package['members'][$i]['note'] .= ' but IDPal/getSubmissionsStatus() returned an error of status ' . $result['response']['status'];
 										}
 									}
 								} else {
 									// just manually override
-									$updated_directors_package['members'][$i]['status'] = 1; // set this users status to 1
-									$updated_directors_package['members'][$i]['overwritten'] = time(); // add a timestamp for when this was manually overwritten
+									$updated_contacts_package['members'][$i]['status'] = 1; // set this users status to 1
+									$updated_contacts_package['members'][$i]['overwritten'] = time(); // add a timestamp for when this was manually overwritten
 								}
 							}
 						}
 					$i++;}
-					update_user_meta($client_id, 'aml_company_directors', $updated_directors_package); $debugging_message .= '<b>Middle</b>' . print_r($updated_directors_package, 1);
+					update_user_meta($client_id, 'aml_company_contacts', $updated_contacts_package); $debugging_message .= '<b>Middle</b>' . print_r($updated_contacts_package, 1);
 					do_action( 'aml_cron_idpal_get_progress_uuids' ); // run the cron
 					// post cron - just do a debug
-					/*$directors_package = get_user_meta($client_id, 'aml_company_directors', true);
-					$debugging_message .= '<b>After</b>' . print_r($directors_package, 1);
+					/*$contacts_package = get_user_meta($client_id, 'aml_company_contacts', true);
+					$debugging_message .= '<b>After</b>' . print_r($contacts_package, 1);
 					Comms\emailUser(['to' => 'hello@hootfish.ie', 'subject' => '[Type: Info] ID Pal', 'body' => '[user.php -> user_idpal_manually_complete()] | trace: ' . $debugging_message]);*/
 					// finally return
 					return true;
@@ -883,25 +892,25 @@
 	//add_filter( "gform_pre_submission_filter_43", __NAMESPACE__ . '\\populate_proof' );
 	//add_filter( "gform_admin_pre_render_43", __NAMESPACE__ . '\\populate_proof' );
 	function populate_proof ( $form ) {
-		$directors = [];
+		$contacts = [];
     	if ( is_user_logged_in() ) {
     		$current_user = wp_get_current_user();
     		if ( in_array( 'client', (array) $current_user->roles ) ) {
-    			$directors =  get_user_meta( $current_user->ID, 'aml_company_directors', true );
+    			$contacts =  get_user_meta( $current_user->ID, 'aml_company_contacts', true );
     		}
     	}
-    	// Handy\I_Handy::tip($$directors);
+    	// Handy\I_Handy::tip($$contacts);
 		foreach ( $form['fields'] as &$field ) {
 			// look for 'populate-proof' css class and 'select' field
 			if (strpos($field['cssClass'], 'populate-proof') === false) continue;
 			$choices = [];
-			if ( !empty($directors) ) {
-				foreach( $directors as $director ) {
-					$choices[] = array('text' => $director, 'value' => $director);
+			if ( !empty($contacts) ) {
+				foreach( $contacts as $contact ) {
+					$choices[] = array('text' => $contact, 'value' => $contact);
 				}
 			}
 	        // update 'Select a Post' to whatever you'd like the instructive option to be
-	        $field->placeholder = 'Select Director';
+	        $field->placeholder = 'Select Contact';
 	        $field->choices = $choices;
 		}
 		return $form;
@@ -914,13 +923,13 @@
 	*
 	* @webhook
 	*
-	* - Production: https://accountantonline.ie/wp-admin/admin-post.php?action=idpal_webhook_response
-	* - Staging: https://acntonline.staging.wpengine.com/wp-admin/admin-post.php?action=idpal_webhook_response
-	* - Local: http://accountantonline.local:8080/wp/wp-admin/admin-post.php?action=idpal_webhook_response
+	* - Production: https://aml.tynandillon.ie/wp-admin/admin-post.php?action=idpal_webhook_response
+	* - Staging: https://xxxx/wp-admin/admin-post.php?action=idpal_webhook_response
+	* - Local: http://aml.loc/wp/wp-admin/admin-post.php?action=idpal_webhook_response
 	*
 	* @response
 	*
-	* sign Key: p%s77OL%oc6zjuRFNZ4U7#XVRJ4%@R5*%ZoB4E5syW*tvv7d1oRMlNfCRbYyPr
+	* sign Key: hRawN$o%9u6@BtT^mQ
 	*
 	* @docs
 	*
@@ -949,7 +958,7 @@
 	    if ( !empty($response) ) {
 	    	$data = json_decode( $response, true ); // Handy\I_Handy::tip($data);die();
 			error_log( 'process_idpal_webhook_response() | data: ' . print_r($data,1)  );
-			//wp_mail( 'hello@hootfish.ie', '[Type: Debug | Module: IDPal', '[user/idpal.php -> process_idpal_webhook_response() ] | data: ' . print_r($data,1) );
+			wp_mail( 'hello@hootfish.ie', '[Type: Debug | Module: IDPal', '[user/idpal.php -> process_idpal_webhook_response() ] | data: ' . print_r($data,1) );
 		    //$data['event_id']; // 678425
 		    //$data['event_type']; // [new_submission_start|submission_complete]
 		    //$data['uuid']; // 1ad67848
@@ -969,10 +978,10 @@
 	    		//mailPostData(); // die('sdf'); // debugging
 	    		//error_log('process_idpal_webhook_response() | event_type = ' . $data['event_type']); 
 				if (!empty($data['uuid'])) {
-					$client_id = get_client_by_director_uuid($data['uuid']);
+					$client_id = get_client_by_contact_uuid($data['uuid']);
 					if (!empty($client_id)) {
 	    				error_log('process_idpal_webhook_response() | event_type = ' . $data['event_type'] . ', client ID ( ' . $client_id . ') found for UUID ' . $data['uuid']); 
-						process_directors_package ($client_id, $data);
+						process_contacts_package ($client_id, $data);
 						// Handy\I_Handy::tip($package);
 					} else {
 	    				error_log('process_idpal_webhook_response() | event_type = ' . $data['event_type'] . ', client ID not found for UUID ' . $data['uuid']); 
@@ -984,7 +993,7 @@
 	}
 	/*
 	*
-	* get a director in a directors package ('aml_company_directors') given some identifier
+	* get a contact in a contacts package ('aml_company_contacts') given some identifier
 	*
 	* @params
 	*
@@ -992,32 +1001,32 @@
 	* - $value
 	*
 	*/
-	function get_client_by_director_uuid ( $uuid ) {
+	function get_client_by_contact_uuid ( $uuid ) {
 		if (empty($uuid)) return;
 		$clients = get_users([
-			'meta_key' => 'aml_company_directors'
+			'meta_key' => 'aml_company_contacts'
 		]);
 		if ( !empty($clients) ) {
 			foreach ($clients as $client) {
-				$directors = get_user_meta($client->ID, 'aml_company_directors', true);
-				if ( !empty($directors) ) {
-					if ( empty($directors['status']) ) {
-						// directors package is incomplete 
-						foreach ($directors['members'] as $member) {
-							$updated_director = [];
-							$updated_director = $member;
+				$contacts = get_user_meta($client->ID, 'aml_company_contacts', true);
+				if ( !empty($contacts) ) {
+					if ( empty($contacts['status']) ) {
+						// contacts package is incomplete 
+						foreach ($contacts['members'] as $member) {
+							$updated_contact = [];
+							$updated_contact = $member;
 							if ( !isset($member['overwritten']) ) {
 								if ( empty($member['status']) ) {
-									// director is incomplete
+									// contact is incomplete
 									if ( $member['uuid'] == $uuid ) {
 										//Handy\I_Handy::tip($member);
 										return $client->ID;
 									}
 								}
 							} // !isset($member['overwritten'])
-						} // $directors['members'] as $member
-					} // empty($directors['status'])
-				} // !empty($directors)
+						} // $contacts['members'] as $member
+					} // empty($contacts['status'])
+				} // !empty($contacts)
 			} // $clients as $client
 		} // !empty($clients)
 	}
@@ -1027,7 +1036,7 @@
 	* @params
 	*
 	* - $client_id [user_id]
-	* - $uuid [director submission]
+	* - $uuid [contact submission]
 	* - $data [
 	* - event_type [new_submission_start|submission_complete]
 	* - uuid
@@ -1035,37 +1044,37 @@
 	* - source
 	* - ]
 	*/
-	function process_directors_package ( $client_id, $data ) {
-		error_log('process_directors_package() called | client ID: ' . $client_id . ', data: ' . print_r($data,1) );
+	function process_contacts_package ( $client_id, $data ) {
+		error_log('process_contacts_package() called | client ID: ' . $client_id . ', data: ' . print_r($data,1) );
 		if (empty($client_id)) return;
 		if (empty($data['uuid'])) return;
 		if (empty($data['event_type'])) return;
 		$debug = true;
 		$debug_ips = Debug\get_debug_ips();
-		$directors = get_user_meta($client_id, 'aml_company_directors', true);
-		if ( !empty($directors) ) {
-			if ( empty($directors['status']) ) {
-				// directors package is incomplete
-				$updated_directors = [
+		$contacts = get_user_meta($client_id, 'aml_company_contacts', true);
+		if ( !empty($contacts) ) {
+			if ( empty($contacts['status']) ) {
+				// contacts package is incomplete
+				$updated_contacts = [
 					'status' => 0, // default until proven
-					'entry_id' => $directors['entry_id'],
+					'entry_id' => $contacts['entry_id'],
 					'members' => [],
 				];
-				$os=0;$i=0;foreach ($directors['members'] as $member) { // $os overall status
-					$updated_director = [];
-					$updated_director = $member;
+				$os=0;$i=0;foreach ($contacts['members'] as $member) { // $os overall status
+					$updated_contact = [];
+					$updated_contact = $member;
 					if ( !isset($member['overwritten']) ) {
 						if ( empty($member['status']) ) {
 							// member is NOT complete
 							error_log('compare ' . $member['uuid'] . ' | ' . $data['uuid']);
 							// here's the difference (between CRON and webhook versions) - we're not checking ALL clients - we're just checking this one
 							if ( $data['uuid'] == $member['uuid'] ) {
-								$updated_director['submissions'][$data['submission_id']][$data['event_type']] = time();
-								// wp_mail( 'hello@hootfish.ie', '[Type: Debug | Module: IDPal', '[user/idpal.php -> process_directors_package()] | client ' . $client_id . ' - member uuid ' . $data['uuid'] . ' ' . $data['event_type']);
+								$updated_contact['submissions'][$data['submission_id']][$data['event_type']] = time();
+								// wp_mail( 'hello@hootfish.ie', '[Type: Debug | Module: IDPal', '[user/idpal.php -> process_contacts_package()] | client ' . $client_id . ' - member uuid ' . $data['uuid'] . ' ' . $data['event_type']);
 								if ( $data['event_type'] == 'submission_complete' ) {
-									$updated_director['status'] = 1;  // set this members status to 1
-									$updated_director['step'] = 2; // 2: docs submitted
-									$updated_director['finished'] = time(); // not 100% accurate - within the time between CRON calls
+									$updated_contact['status'] = 1;  // set this members status to 1
+									$updated_contact['step'] = 2; // 2: docs submitted
+									$updated_contact['finished'] = time(); // not 100% accurate - within the time between CRON calls
 									$os++; // add 1 to overall status dd
 								}
 							} // $member['uuid'] == $data['uuid']
@@ -1077,22 +1086,22 @@
 						// member has been overwritten so just pass
 						$os++;
 					}
-					array_push($updated_directors['members'], $updated_director);
-				$i++;} // $directors['members'] as $member // for each director in this directors package
-				// echo "$os|$i"; // are all directors complete? if the same - then yes
-				if ( $debug ) { if ( in_array($_SERVER['REMOTE_ADDR'], $debug_ips) ) { echo "<p>$os|$i</p>"; Handy\I_Handy::tip($updated_directors); }}
+					array_push($updated_contacts['members'], $updated_contact);
+				$i++;} // $contacts['members'] as $member // for each contact in this contacts package
+				// echo "$os|$i"; // are all contacts complete? if the same - then yes
+				if ( $debug ) { if ( in_array($_SERVER['REMOTE_ADDR'], $debug_ips) ) { echo "<p>$os|$i</p>"; Handy\I_Handy::tip($updated_contacts); }}
 				if ( $os==$i ) { 
-					$updated_directors['status'] = 1; 
+					$updated_contacts['status'] = 1; 
 				}
-				// wp_mail( 'hello@hootfish.ie', '[Type: Debug | Module: IDPal', '[user/idpal.php -> process_directors_package()] | client ' . $client_id . ' <code>' . print_r($updated_directors, 1) . '</code>' );
-				$result = update_user_meta( $client_id, 'aml_company_directors', $updated_directors );
-				// check overall status of 'aml_company_directors' and if complete - do follow up tasks
-				if ( $updated_directors['status'] == 1 ) {
+				// wp_mail( 'hello@hootfish.ie', '[Type: Debug | Module: IDPal', '[user/idpal.php -> process_contacts_package()] | client ' . $client_id . ' <code>' . print_r($updated_contacts, 1) . '</code>' );
+				$result = update_user_meta( $client_id, 'aml_company_contacts', $updated_contacts );
+				// check overall status of 'aml_company_contacts' and if complete - do follow up tasks
+				if ( $updated_contacts['status'] == 1 ) {
 					// error_log('continue_workflow() called');
-					continue_workflow( $client_id );
+					continue_workflow( $client_id ); // xx
 				}
-			} // empty($directors['status'])
-		} // !empty($directors)
+			} // empty($contacts['status'])
+		} // !empty($contacts)
 	}
 	/*
 	*
@@ -1106,18 +1115,18 @@
 		$debug = false;
 		// wp_mail( 'hello@hootfish.ie', '[Type: Debug | Module: IDPal', '[user/idpal.php -> continue_workflow()] | client ' . $client_id . ' client package member overall completed.');
 		$debug_ips = Debug\get_debug_ips();
-		$directors = get_user_meta($client_id, 'aml_company_directors', true);
-		if ( $debug ) { if ( in_array($_SERVER['REMOTE_ADDR'], $debug_ips) ) { Handy\I_Handy::tip($directors); die('DEBUGGING -- continue_workflow() -- DEBUGGING');}}
-		if ( !empty($directors) ) {
-			$updated_directors = $directors; // if we need to update anything
-			// directors are all complete - so complete the flow
-			if ( !empty($directors['status']) ) {
+		$contacts = get_user_meta($client_id, 'aml_company_contacts', true);
+		if ( $debug ) { if ( in_array($_SERVER['REMOTE_ADDR'], $debug_ips) ) { Handy\I_Handy::tip($contacts); die('DEBUGGING -- continue_workflow() -- DEBUGGING');}}
+		if ( !empty($contacts) ) {
+			$updated_contacts = $contacts; // if we need to update anything
+			// contacts are all complete - so complete the flow
+			if ( !empty($contacts['status']) ) {
 				/*$info = [
-					'entry_id' => $directors['entry_id'],
+					'entry_id' => $contacts['entry_id'],
 					'key' => $gflow_webhook['key'],
 					'secret' => $gflow_webhook['secret'],
 				];*/
-				$response = GravityFlow\incoming_webhook_endpoint_process($directors['entry_id']); // looking for 'complete'
+				$response = 'complete'; // GravityFlow\incoming_webhook_endpoint_process($contacts['entry_id']); // looking for 'complete'
 				if ( $response == 'complete' ) { // debugging add 'true' | otherwise $response == 'complete'
 					// Email administrator
 					$business_name = get_user_meta($client->ID, 'aml_business_name', true);
@@ -1128,10 +1137,10 @@
 							'Content-Type' => 'text/html; charset=UTF-8',
 							'Cc: Richard Cantwell <hello@hootfish.ie>', // debugging
 						],
-						'subject' => 'Directors ID-Pal ID/POA submission and verification complete',
+						'subject' => 'Contacts ID-Pal ID/POA submission and verification complete',
 						'body' => sprintf(
-									"Administrator,<br><br> All directors in directors package <a href='%1s' target='_blank'>entry</a> initiated by client <a href='mailto:%2s'>%3s %4s</a>%5s have now completed their ID-Pal ID/POA submission and verification. This client has been notified and can now continue with subsequent workflow checklists.",
-									(!empty($fid)?admin_url('admin.php?page=gf_entries&view=entry&id='.$fid.'&lid='.$directors['entry_id']):''),
+									"Administrator,<br><br> All contacts in contacts package <a href='%1s' target='_blank'>entry</a> initiated by client <a href='mailto:%2s'>%3s %4s</a>%5s have now completed their ID-Pal ID/POA submission and verification. This client has been notified.",
+									(!empty($fid)?admin_url('admin.php?page=gf_entries&view=entry&id='.$fid.'&lid='.$contacts['entry_id']):''),
 									$client->user_email,
 									$client->first_name,
 									$client->last_name,
@@ -1141,7 +1150,7 @@
 					$result = Comms\emailUser($mail_args);
 					// Email user (first user in bundle) and tell them that flow can continue
 					if ( !empty( $client->user_email ) ) {
-						// could also use $updated_directors['members'][0]['email'] - this is assuming that the 'responsible' user is number 1 on the list which is probably not the case - possibly last
+						// could also use $updated_contacts['members'][0]['email'] - this is assuming that the 'responsible' user is number 1 on the list which is probably not the case - possibly last
 						$mail_args = [
 							'to' => $client->user_email,
 							'headers' => [
@@ -1150,19 +1159,18 @@
 							],
 							'subject' => 'ID & POA Verification complete',
 							'body' => sprintf(
-								"Hi %1s,<br><br>ID verification is now complete for your business. Please proceed to complete your %2s.",
-								$client->first_name,
-								"<a href='$site_url/profile/checklists'>checklist</a>."
+								"Hi %1s,<br><br>ID verification is now complete for your business.",
+								$client->first_name
 							),
 						];
 						$result = Comms\emailUser($mail_args);
 					}
 					// store
-					$updated_directors['flow_unlocked'] = time(); update_user_meta( $client->ID, 'aml_company_directors', $updated_directors ); // Update the user so that procedure only happens once
+					$updated_contacts['flow_unlocked'] = time(); update_user_meta( $client->ID, 'aml_company_contacts', $updated_contacts ); // Update the user so that procedure only happens once
 				}
 				// Handy\I_Handy::tip($response);
-			} // !empty($updated_directors['status'])
-		} // !empty($directors) // this client has a directors package
+			} // !empty($updated_contacts['status'])
+		} // !empty($contacts) // this client has a contacts package
 	}
 	/*
 	*
@@ -1174,7 +1182,7 @@
 		$debug_ips = Debug\get_debug_ips();
 		$uuid = '40096ef8';
 		if ( in_array($_SERVER['REMOTE_ADDR'], $debug_ips) ) {
-			$client_id = get_client_by_director_uuid($uuid);
+			$client_id = get_client_by_contact_uuid($uuid);
 			if (!empty($client_id)) {
 				echo 'Client is ' . $client_id;
 				// [new_submission_start|submission_complete]
@@ -1182,7 +1190,7 @@
 					'uuid' => $uuid,
 					'event_type' => 'submission_complete',
 				];
-				process_directors_package ($client_id, $data);
+				process_contacts_package ($client_id, $data);
 				// Handy\I_Handy::tip($package);
 			}
 			die('DEBUGGING');
@@ -1190,7 +1198,7 @@
 	}
 	/*
 	*
-	* testing script to post payload to https://acntonline.staging.wpengine.com/wp-admin/admin-post.php?action=idpal_webhook_response
+	* testing script to post payload to https://xxxx/wp-admin/admin-post.php?action=idpal_webhook_response
 	* to test if POST data is being received or if theres some block on it being received (perhaps WP Engine?)?
 	*
 	* @useage
@@ -1199,18 +1207,18 @@
 	*
 	*  @webhooks
 	*
-	* - https://accountantonline.ie/wp-admin/admin-post.php?action=idpal_webhook_response
-	* - https://acntonline.staging.wpengine.com/wp-admin/admin-post.php?action=idpal_webhook_response
-	* - http://accountantonline.local:8080/wp/wp-admin/admin-post.php?action=idpal_webhook_response
+	* - https://aml.tynandillon.ie/wp-admin/admin-post.php?action=idpal_webhook_response
+	* - https://xxxx/wp-admin/admin-post.php?action=idpal_webhook_response
+	* - http://aml.loc/wp/wp-admin/admin-post.php?action=idpal_webhook_response
 	*
 	*/
 	// add_action( 'init', __NAMESPACE__ . '\\sendDummyPostData' );  // ** careful - should only be on on LOCAL
 	function sendDummyPostData () {
 		$ch = curl_init();
 		$webhooks = [
-			'production' => 'https://accountantonline.ie/wp-admin/admin-post.php?action=idpal_webhook_response',
-			'staging' => 'https://acntonline.staging.wpengine.com/wp-admin/admin-post.php?action=idpal_webhook_response',
-			'local' => 'http://accountantonline.local:8080/wp/wp-admin/admin-post.php?action=idpal_webhook_response',
+			'production' => 'https://aml.tynandillon.ie/wp-admin/admin-post.php?action=idpal_webhook_response',
+			'staging' => 'https://xxxx/wp-admin/admin-post.php?action=idpal_webhook_response',
+			'local' => 'http://aml.loc/wp/wp-admin/admin-post.php?action=idpal_webhook_response',
 		];
 		$url = $webhooks['production']; // which environement to send POST to
 		// dummy data to POST

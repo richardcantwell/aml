@@ -67,8 +67,9 @@
 		];
 		$admin_email = get_option( 'admin_email' );
 		$credentials = idPalGetCredentials();
-		$query_url = idPalGetQueryUrl('getAccessToken'); // die($query_url);
+		$query_url = idPalGetQueryUrl('getAccessToken'); //die($query_url);
 		$bearer_info = idPalGetBearerInfo($seed=false); // idPalGetBearerInfo(true) // get from seed/DB as this will be stored repeatly once we have an access token
+		// Handy\I_Handy::tip($bearer_info);
 		try {
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -158,12 +159,13 @@
 	*
 	*/
 	function idPalGetCredentials () {
-		$client_key = App\themeSettings('idpal_client_key');
-		$access_key = App\themeSettings('idpal_access_key');
+		$client_key = get_field('client_key', 'option');
+		$access_key = get_field('access_key', 'option');
 		$data = [
 			'client_key' => $client_key, // 'FEBC3820',
 			'access_key' => $access_key , // 'EC6FBB0F-C6E1-D621-7E19-AFE5022C74C3',
 		];
+		// Handy\I_Handy::tip($data); die();
 		return $data;
 	}
 

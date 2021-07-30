@@ -50,7 +50,7 @@
 		];
 
 		// error_log('[user.php -> emailUser() | args: ]' . print_r($args,1));
-		//  Handy\I_Handy::tip($args); die();
+		// Handy\I_Handy::tip($args); die();
 
 		return wp_mail( $args['to'], $args['subject'], $args['body'], $args['headers'] );
 

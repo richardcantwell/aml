@@ -134,39 +134,3 @@ add_action('after_setup_theme', function () {
         return "<?= " . __NAMESPACE__ . "\\asset_path({$asset}); ?>";
     });
 });
-
-/* [rc] functions below
---------------------------------------------------------------*/
-
-/*
-* 
-* Theme settings
-*
-* @useage sage/themeSettings
-* 
-* [Improve] - replace with ACF
-*
-*/
-
-function themeSettings ($selector = null, $match = false, $which = 'aml_options' ) {
-    $return = array();
-    $options = get_option($which); // unserialize(get_option($which));
-    if ( !empty($options) ) {
-        if ( !empty($selector) ) {
-            foreach ($options as $key => $value) {
-                if ( !$match ) {
-                    if ( $key == $selector ) {
-                        return $value;
-                    }
-                } else {
-                    if ( ( 0 === strpos($key, $selector) ) || $selector == null ) {
-                        $return[$key] = $value;
-                    }
-                }
-            }
-        } else {
-            $return = $options;
-        }
-    }
-    return $return;
-}

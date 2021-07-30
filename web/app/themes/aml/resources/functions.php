@@ -125,8 +125,8 @@ array_map(function ($file) use ($sage_error) {
     'debug',
     'config',
     'utilities',
+    'settings',
     //'form',
-    //'course',
     //'student',
 ]);
 

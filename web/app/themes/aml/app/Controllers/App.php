@@ -16,7 +16,7 @@ class App extends Controller
 
     public function data () {
         global $post, $view;
-        $settings = []; // $settings = \App\themeSettings(); // get all settings
+        $settings = [];
         $data = [];
         $data = [
             'site' => [
