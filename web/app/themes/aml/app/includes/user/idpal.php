@@ -60,7 +60,7 @@
 								<?
 								$business_name = get_user_meta($client->ID, 'aml_business_name', true);
 								$client_name = $client->display_name . ( !empty($business_name) ? ' ('.$business_name.')':''); 
-								$contacts_package = get_user_meta($client->ID, 'aml_company_contacts', true); Handy\I_Handy::tip($contacts_package);
+								$contacts_package = get_user_meta($client->ID, 'aml_company_contacts', true);
 								/*
 								   [status] => 1|0
 								   [entry_id] =>
@@ -110,7 +110,8 @@
 									<td colspan="7">
 										<div id="collapse-client-<?=$client->ID?>" class="collapse in p-3">
 											<? if ( empty($contacts_package['status']) ): ?>
-												<!-- <p>Displaying incomplete ID Pal tasks:</p> -->
+												<p>Package is incomplete</p>
+												<? Handy\I_Handy::tip($contacts_package); ?>
 												<? if ( !empty($contacts_package['members']) ): ?>
 													<div class="transaction">
 														<ul class="list-unstyled">
@@ -144,7 +145,8 @@
 												<? endif; // !empty($contacts_package['members']) ?>
 												<? $j++; ?>
 											<? else: ?>
-												<p>Displaying complete ID Pal tasks:</p>
+												<p>Package is complete</p>
+												<? Handy\I_Handy::tip($contacts_package); ?>
 											<? endif; // empty($contacts_package['status']) ) ?>
 										</div>
 									</td>
