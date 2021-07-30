@@ -960,7 +960,7 @@
 	    if ( !empty($response) ) {
 	    	$data = json_decode( $response, true ); // Handy\I_Handy::tip($data);die();
 			error_log( 'process_idpal_webhook_response() | data: ' . print_r($data,1)  );
-			wp_mail( 'hello@hootfish.ie', '[Type: Debug | Module: IDPal', '[user/idpal.php -> process_idpal_webhook_response() ] | data: ' . print_r($data,1) );
+			//wp_mail( 'hello@hootfish.ie', '[Type: Debug | Module: IDPal', '[user/idpal.php -> process_idpal_webhook_response() ] | data: ' . print_r($data,1) );
 		    //$data['event_id']; // 678425
 		    //$data['event_type']; // [new_submission_start|submission_complete]
 		    //$data['uuid']; // 1ad67848
