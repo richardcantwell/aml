@@ -9,7 +9,7 @@ export default {
             var btn = $(this);
             // console.log(aml_vars.ajax_url);
             // console.log($(this).data('id'));
-            var user_id = btn.data('id');
+            var user_id = btn.data('id'); console.log('user_id clicked .. ' + user_id);
             btn.text('..');
             $.ajax({
                 url: 'https://aml.tynandillon.ie/wp-admin/admin-ajax.php', // aml_vars.ajax_url,
@@ -20,7 +20,7 @@ export default {
                 },
                 success: function( response ) {
                     console.log('response = ' + response);
-                    btn.text('Go');
+                    btn.text('Sent');
                 },
             });
             return false;
