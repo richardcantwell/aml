@@ -42,6 +42,7 @@
 						<thead>
 							<tr>
 								<th></th>
+								<th></th>
 								<th>Code</th>
 								<th>ID</th>
 								<th>Email</th>
@@ -57,6 +58,7 @@
 								$fields = get_fields('user_' . $client->ID); // Handy\I_Handy::tip($fields);
 								$client_data = get_userdata( $client->ID ); // Handy\I_Handy::tip($client_data);
 								$client_name = $client->display_name; 
+								$client_avatar = 'https://secure.gravatar.com/avatar/?s=20&d=mm&r=g'; // get_avatar( get_the_author_meta($client->ID), 20 );
 								$contacts_package = get_user_meta($client->ID, 'aml_company_contacts', true); // Handy\I_Handy::tip($contacts_package);
 								/*
 								   [status] => 1|0
@@ -89,6 +91,7 @@
 								?>
                                 <tr class="accordion-toggle collapsed" id="accordion-client-<?=$client->ID?>" data-toggle="collapse" data-parent="#accordion-client-<?=$client->ID?>" href="#collapse-client-<?=$client->ID?>">
 	                                <? if ( !empty($contacts_package) ): ?><td class="expand-button"></td><? else: ?><td></td><? endif; ?>
+	                                <td><img src="<?=$client_avatar?>" alt="<?=$client_name?>"/></td>
 	                                <td><?=$fields['code']?></td>
 	                                <td><?=$client->ID?></td>
 	                                <td><?=$client_name?></td>
@@ -99,7 +102,7 @@
                                 </tr>
                                 <? if ( !empty($contacts_package) ): ?>
 									<tr class="hide-table-padding">
-										<td colspan="9">
+										<td colspan="10">
 											<div id="collapse-client-<?=$client->ID?>" class="collapse in p-3">
 												<? if ( !empty($contacts_package['members']) ): ?>
 													<div class="details">
@@ -109,9 +112,15 @@
 																<div class="col-12 col-md-8">
 																	<div class="card">
 																		<div class="card-body">
-																			<div class="indicators"><a href="#" title="Status: <?=$member['status']?>"><span class="indicator status-<?=$member['status']?>"></span></a><a href="#" title="Step: <?=$member['step']?>"><span class="indicator step-<?=$member['step']?>"></span></a></div>
 																			<ul class="list-unstyled">
-																				<li><strong>Step</strong>: <?=$member['step']?> / <?=(count($step_meanings)-1)?>  - <?=$step_meanings[$member['step']]?> ( <? foreach ($step_meanings as $k=>$v): echo $k . ': ' . $v . ' '; endforeach; ?>)</li>
+																				<li><strong>Step</strong>: 
+																					<ul class="mt-3">
+																						<? foreach ($step_meanings as $k=>$v): ?>
+																							<? $class = ($member['step']==$k?' class="highlight"':''); ?>
+																							<li><?=$k?>. <span<?=$class?>><?=$v?></span></li>
+																						<? endforeach; ?>
+																					</ul>
+																				</li>
 																				<li><strong>Start:</strong> <?=date('d-m-Y H:i:s', $member['started'])?></li>
 																				<li><strong>Updated:</strong> <?=(!empty($member['updated'])?date('d-m-Y H:i:s', $member['updated']):'')?></li>
 																				<? if ( empty($member['status']) ): ?>
@@ -147,6 +156,7 @@
 																<div class="col-6 col-md-4">
 																	<div class="card">
 																		<div class="card-body">
+																			<div class="indicators"><a href="#" title="Status: <?=$member['status']?>"><span class="indicator status-<?=$member['status']?>"></span></a><a href="#" title="Step: <?=$member['step']?>"><span class="indicator step-<?=$member['step']?>"></span></a></div>
 																			<ul class="list-unstyled">
 																				<li><strong>Name</strong>: <?=$client_name?></li>
 																				<li><strong>Added</strong>: <?=date( 'd-m-Y H:i:s', strtotime( $client_data->user_registered ) )?></li>
