@@ -88,6 +88,9 @@ body {
 
 .pp-login-form-wrap {
     margin-top: 10%;
+    form {
+        .ppbs-headline { display: none; }
+    }
 }
 
 /*
