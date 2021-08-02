@@ -22,6 +22,9 @@ body {
         .alert {
             margin-left: 1rem;
             margin-right: 1rem;
+            ul {
+                li { margin-bottom: 0px;}
+            }
         }
     }
     .sidebar-sticky {
