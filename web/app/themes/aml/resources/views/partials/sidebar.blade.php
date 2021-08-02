@@ -7,6 +7,16 @@
 			</li>
 			<li class="nav-item"><a class="nav-link" href="#">Dashboard</a></li>
 		</ul> -->
-		<p>Key stats will appear here.</p>
-	</div>
-</nav>
+		<div class="stats">
+			<?php if ( !empty($data['stats']) ): ?>
+				<div class="alert alert-info">
+					<ul class="list-unstyled">
+						<?php foreach ($data['stats'] as $k=>$v): ?>
+							<li><?php echo ucfirst($k) ?>: <?php echo $v ?></li>
+						<?php endforeach; ?>
+					</ul>
+				</div> <!-- .card -->
+			<?php endif; ?>
+		</div> <!-- .stats -->
+	</div> <!-- .sidebar-sticky -->
+</nav> <!-- .sidebar -->

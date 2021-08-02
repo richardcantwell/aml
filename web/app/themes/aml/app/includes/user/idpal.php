@@ -44,9 +44,10 @@
 								<th></th>
 								<th></th>
 								<th>Code</th>
+								<th>ID</th>
+								<th>Email</th>
 								<th>Name</th>
 								<th>Entity</th>
-								<th>Date</th>
 								<th>Status</th>
 								<th></th>
 							</tr>
@@ -55,8 +56,8 @@
 							<? $i=1; $j=1; foreach ($clients as $client): ?>
 								<?
 								$fields = get_fields('user_' . $client->ID); // Handy\I_Handy::tip($fields);
-								$client_name = $client->display_name . ( !empty($business_name) ? ' ('.$business_name.')':''); 
-								$contacts_package = get_user_meta($client->ID, 'aml_company_contacts', true);
+								$client_name = $client->display_name; 
+								$contacts_package = get_user_meta($client->ID, 'aml_company_contacts', true); // Handy\I_Handy::tip($contacts_package);
 								/*
 								   [status] => 1|0
 								   [entry_id] =>
@@ -85,71 +86,71 @@
 								   			..
 								 [flow_unlocked] => 1560186422
 								*/
-								// $client->user_email
 								?>
                                 <tr class="accordion-toggle collapsed" id="accordion-client-<?=$client->ID?>" data-toggle="collapse" data-parent="#accordion-client-<?=$client->ID?>" href="#collapse-client-<?=$client->ID?>">
-	                                <td class="expand-button"></td>
+	                                <? if ( !empty($contacts_package) ): ?><td class="expand-button"></td><? else: ?><td></td><? endif; ?>
 	                                <td><?=$i?></td>
 	                                <td><?=$fields['code']?></td>
+	                                <td><?=$client->ID?></td>
 	                                <td><?=$client_name?></td>
+	                                <td><?=$client->user_email?></td>
 	                                <td><?=$fields['entity_type']?></td>
-	                                <td>XX</td>
 	                                <td><span class="indicator status-<?=$contacts_package['status']?>"></span></td>
-	                                <td>
-	                                	<? if ( empty($contacts_package['status']) ): ?>
-	                                		<a href="#" class="idpal_btn_submit_user" data-id="<?=$client->ID?>" title="Send this user to ID Pal">Send</a>
-	                                	<? else: ?>
-	                                		<a href="#" class="idpal_btn_nudge_user" data-id="<?=$client->ID?>" title="Nudge this user">Nudge</a>
-	                                	<? endif; ?>
-	                                </td>
+	                                <td><? if ( empty($contacts_package) ): ?><a href="#" class="idpal_btn_submit_user" data-id="<?=$client->ID?>" title="Send this user to ID Pal">Begin</a><? endif; ?></td>
                                 </tr>
-								<tr class="hide-table-padding">
-									<td colspan="8">
-										<div id="collapse-client-<?=$client->ID?>" class="collapse in p-3">
-											<p>Package is <?=(empty($contacts_package['status'])?'incomplete':'complete')?>.</p>
-											<? // Handy\I_Handy::tip($contacts_package); ?>
-											<? if ( !empty($contacts_package['members']) ): ?>
-												<div class="details">
-													<? foreach ( $contacts_package['members'] as $member ) { ?>
-														<? // Handy\I_Handy::tip($member); ?>
-														<div class="card">
-															<div class="card-body">
-																<div class="indicators"><a href="#" title="Status: <?=$member['status']?>"><span class="indicator status-<?=$member['status']?>"></span></a><a href="#" title="Step: <?=$member['step']?>"><span class="indicator step-<?=$member['step']?>"></span></a></div>
-																<ul class="list-unstyled">
-																	<li><strong>Email:</strong> <a href='mailto:<?=$member['email']?>' title='' target='_blank'><?=$member['email']?></a></li>
-																	<li><strong>Start:</strong> <?=date('Y-m-d H:i:s', $member['started'])?></li>
-																	<li><strong>Updated:</strong> <?=(!empty($member['updated'])?date('Y-m-d H:i:s', $member['updated']):'')?></li>
-																	<li><strong>Step</strong>: <?=$member['step']?> / <?=(count($step_meanings)-1)?>  - <?=$step_meanings[$member['step']]?> ( <? foreach ($step_meanings as $k=>$v): echo $k . ': ' . $v . ' '; endforeach; ?>)</li>
-																	<? if ( empty($member['status']) ): ?>
-																		<? $url_unique_idpal = add_query_arg( 'uuid', $member['uuid'], $url_base_idpal ); // new $member['uuid'] ?>
-																		<li><a href='mailto:<?=$member['email']?>?subject=<?=urlencode('ID Verification Outstanding')?>&body=Please complete your ID Verification using your unique ID-Pal URL unique ID Pal URL <?=$url_unique_idpal?>.' title='Email this user' target='_blank' class='btn btn-link'>Email this user</a></li>
-																	<? endif; ?>
-																	<? if ( !empty($member['submissions']) ): ?>
-																		<li><?=$member['submissions'][0]['status']?>, <?=$error_codes[$member['submissions'][0]['status']]?></li>
-																	<? endif; ?>
-																</ul>
-																<?
-																/*echo sprintf("User <a href='mailto:%1s' title='%2s' target='_blank'>%3s</a>, started %4s%5s (AML package step <a href='#' title='%6s'>%7s</a>) has currently ID-Pal status %8s.",
-																	$member['email'].'?subject='.urlencode('ID Verification Outstanding').'&body=Please complete your ID Verification using your unique ID-Pal URL unique ID Pal URL '.$url_unique_idpal.'.',
-																	'', //print_r($member,1),
-																	$member['email'],
-																	date('Y-m-d H:i:s', $member['started']),
-																	(!empty($member['updated'])?', updated '.date('Y-m-d H:i:s', $member['updated']):''),
-																	'0: AML package created, 1: link sent, 2: docs submitted',
-																	$member['step'],
-																	(!empty($member['submissions'])?'<a href="#" title="'.$error_codes[$member['submissions'][0]['status']].'">'.$member['submissions'][0]['status'].'</a>':'<a href="#" title="'.$error_codes[0].'">0</a>')
-																	// (!empty($member['submissions'])?'<a href="#" title="'.$error_codes[$member['submissions'][0]['status']].'">'.$member['submissions'][0]['status'].'</a>':'<a href="#" title="'.$error_codes[0].'">0</a>')
-																);*/
-																?>
-															</div> <!-- card-body -->
-														</div> <!-- card -->
-													<? } // $contacts_package['members'] as $member ?>
-												</div>
-											<? endif; // !empty($contacts_package['members']) ?>
-											<? $j++; ?>
-										</div>
-									</td>
-								</tr>
+                                <? if ( !empty($contacts_package) ): ?>
+									<tr class="hide-table-padding">
+										<td colspan="8">
+											<div id="collapse-client-<?=$client->ID?>" class="collapse in p-3">
+												<? if ( !empty($contacts_package['members']) ): ?>
+													<div class="details">
+														<? foreach ( $contacts_package['members'] as $member ): ?>
+															<? // Handy\I_Handy::tip($member); ?>
+															<div class="card">
+																<div class="card-body">
+																	<div class="indicators"><a href="#" title="Status: <?=$member['status']?>"><span class="indicator status-<?=$member['status']?>"></span></a><a href="#" title="Step: <?=$member['step']?>"><span class="indicator step-<?=$member['step']?>"></span></a></div>
+																	<ul class="list-unstyled">
+																		<li><strong>Step</strong>: <?=$member['step']?> / <?=(count($step_meanings)-1)?>  - <?=$step_meanings[$member['step']]?> ( <? foreach ($step_meanings as $k=>$v): echo $k . ': ' . $v . ' '; endforeach; ?>)</li>
+																		<li><strong>Email:</strong> <a href='mailto:<?=$member['email']?>' title='' target='_blank'><?=$member['email']?></a></li>
+																		<li><strong>Start:</strong> <?=date('d-m-Y H:i:s', $member['started'])?></li>
+																		<li><strong>Updated:</strong> <?=(!empty($member['updated'])?date('d-m-Y H:i:s', $member['updated']):'')?></li>
+																		<? if ( empty($member['status']) ): ?>
+																			<? $url_unique_idpal = add_query_arg( 'uuid', $member['uuid'], $url_base_idpal ); // new $member['uuid'] ?>
+																			<li><a href='mailto:<?=$member['email']?>?subject=<?=urlencode('ID Verification Outstanding')?>&body=Please complete your ID Verification using your unique ID-Pal URL unique ID Pal URL <?=$url_unique_idpal?>.' title='Email this user' target='_blank' class='btn btn-secondary'>Email this user</a></li>
+																		<? endif; ?>
+																		<? if ( !empty($member['finished']) ): ?><li><strong>Finished</strong>: <?=date('d-m-Y H:i:s', $member['finished'])?></li><? endif; ?>
+																		<? if ( !empty($member['overwritten']) ): ?><li><strong>Overwritten</strong>: Yes</li><? endif; ?>
+																		<? if ( !empty($member['submissions']) ): ?>
+																			<li><strong>Submissions</strong>:
+																				<ul class="mt-3">
+																				<? foreach ( $member['submissions'] as $id=>$details ): ?>
+																					<li><a href="https://client.id-pal.com/submission/<?=$id?>" target="_blank"><?=$id?></a>:
+																						<? if ( is_array($details) ): ?>
+																							<ul class="mt-3">
+																								<? foreach ( $details as $k=>$v ): ?>
+																									<li><?=code_to_string($k)?>: <?=date('d-m-Y H:i:s', $v)?></li>
+																								<? endforeach; ?>
+																							</ul>
+																						<? endif; ?>
+																					</li>
+																				<? endforeach; ?>
+																				<? /*if ( empty($member['status']) ): ?>
+																					<li><?=$member['submissions'][0]['status']?>, <?=$error_codes[$member['submissions'][0]['status']]?></li>
+																				<? endif;*/ ?>
+																				</ul>
+																			</li>
+																		<? endif; ?>
+																	</ul>
+																</div> <!-- card-body -->
+															</div> <!-- card -->
+														<? endforeach; // $contacts_package['members'] as $member ?>
+													</div>
+												<? endif; // !empty($contacts_package['members']) ?>
+												<? $j++; ?>
+											</div>
+										</td>
+									</tr>
+								<? endif; ?>
 							<? $i++; endforeach; // foreach ($clients as $client) ?>
 						</tbody>
 					</table>
@@ -160,7 +161,6 @@
 		</div> <!-- clients -->
 		<?
 	}
-
 	/*
 	*
 	* idpal_submit - submit this user into the IDPal process (called by Ajax)
@@ -178,6 +178,42 @@
 			Handy\I_Handy::tip($contacts);
 		}
 		die();
+	}
+	/*
+	*
+	* output some stats
+	*
+	*/
+	function user_idpal_stats() {
+		$stats = [
+			'total' => 0,
+			'complete' => 0,
+		];
+		$args = array(
+		    'role'    => 'client',
+		    'orderby' => 'user_nicename',
+		    'order'   => 'ASC',
+		    // 'meta_key' => 'aml_company_contacts'
+		);
+		$clients = get_users( $args );
+		if ( !empty($clients) ) {
+	 		$i=0; $j=0; foreach ($clients as $client) {
+	 			$contacts_package = get_user_meta($client->ID, 'aml_company_contacts', true);
+	 			if ( !empty($contacts_package) ) {
+	 				if ( !empty($contacts_package['status']) ) $j++;
+	 				/*if ( !empty($contacts_package['members']) ) {
+	 					foreach ( $contacts_package['members'] as $member ) {
+	 						// $member['status']
+	 					}
+	 				}*/
+	 			}
+	 		$i++; }
+ 		}
+		$stats = [
+			'total' => $i,
+			'complete' => $j,
+		];
+		return $stats;
 	}
 	/*
 	*
@@ -1293,4 +1329,15 @@
 			mail($email, $subject, $message);
 		}
 		error_log('mailPostData|'.$message);
+	}
+	/*
+	*
+	*
+	*
+	*/
+	function code_to_string ($str) {
+		if ( empty($str) ) return;
+		$str = str_replace('_', ' ', $str);
+		$str = ucwords($str);
+		return $str;
 	}

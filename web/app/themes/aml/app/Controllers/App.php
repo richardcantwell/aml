@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use Sober\Controller\Controller;
+use Custom\User\IdPal;
 
 class App extends Controller
 {
@@ -41,8 +42,8 @@ class App extends Controller
                 'roles' => [],
                 'meta' => [],
                 'history' => [],
-                'assigned' => [],
             ],
+            'stats' => IdPal\user_idpal_stats(),
         ];
         if ( is_user_logged_in() ) {
             $current_user = wp_get_current_user();
