@@ -114,6 +114,7 @@ table {
         &.accordion-toggle {
             td {
                 &.expand-button {
+                    padding-right: 10px; font-weight: 800;
                     &:after {
                         position: absolute; left:.75rem; top: 50%; transform: translate(0, -50%); content: '-';
                     }
