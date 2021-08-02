@@ -14,6 +14,7 @@
     use Custom\Package\IdPal;
 	use Custom\User\Comms;
 
+
 	/*
 	*
 	*
@@ -23,14 +24,8 @@
 	*/
 	function user_idpal_summary() {
 		$url_base_idpal = get_field('base_url', 'option');
-		$error_codes = [
-			'No submission received', // 0
-			'No submission received and no errors in technical checks, but report not generated', // 1
-			'Submission received with errors in technical checks, and report not generated', // 2
-			'Report Flagged by user', // 3
-			'CDD generated and all technical checks passed', // 4
-			'CDD generated but some technical checks failed (e.g. manual over-ride was used)', // 5
-		];
+		$error_codes = IdPal\get_error_codes(); // get code meanings
+		$step_meanings = IdPal\get_step_meanings(); // get step meanings // Handy\I_Handy::tip($step_meanings);
 		$args = array(
 		    'role'    => 'client',
 		    'orderby' => 'user_nicename',
@@ -46,11 +41,12 @@
                		<table class="table table-striped table-sm">
 						<thead>
 							<tr>
-								<th>#</th>
 								<th></th>
-								<th>Client</th>
+								<th></th>
+								<th>Code</th>
+								<th>Name</th>
+								<th>Entity</th>
 								<th>Date</th>
-								<th>XX</th>
 								<th>Status</th>
 								<th></th>
 							</tr>
@@ -58,7 +54,7 @@
 						<tbody>
 							<? $i=1; $j=1; foreach ($clients as $client): ?>
 								<?
-								$business_name = get_user_meta($client->ID, 'aml_business_name', true);
+								$fields = get_fields('user_' . $client->ID); // Handy\I_Handy::tip($fields);
 								$client_name = $client->display_name . ( !empty($business_name) ? ' ('.$business_name.')':''); 
 								$contacts_package = get_user_meta($client->ID, 'aml_company_contacts', true);
 								/*
@@ -94,8 +90,9 @@
                                 <tr class="accordion-toggle collapsed" id="accordion-client-<?=$client->ID?>" data-toggle="collapse" data-parent="#accordion-client-<?=$client->ID?>" href="#collapse-client-<?=$client->ID?>">
 	                                <td class="expand-button"></td>
 	                                <td><?=$i?></td>
+	                                <td><?=$fields['code']?></td>
 	                                <td><?=$client_name?></td>
-	                                <td>XX</td>
+	                                <td><?=$fields['entity_type']?></td>
 	                                <td>XX</td>
 	                                <td><span class="indicator status-<?=$contacts_package['status']?>"></span></td>
 	                                <td>
@@ -107,47 +104,49 @@
 	                                </td>
                                 </tr>
 								<tr class="hide-table-padding">
-									<td colspan="7">
+									<td colspan="8">
 										<div id="collapse-client-<?=$client->ID?>" class="collapse in p-3">
-											<? if ( empty($contacts_package['status']) ): ?>
-												<p>Package is incomplete</p>
-												<? Handy\I_Handy::tip($contacts_package); ?>
-												<? if ( !empty($contacts_package['members']) ): ?>
-													<div class="transaction">
-														<ul class="list-unstyled">
-														<? foreach ( $contacts_package['members'] as $member ) { ?>
-															<? if ( empty($member['status']) ) { ?>
-																<? // Handy\I_Handy::tip($member); ?>
-																<? $url_unique_idpal = add_query_arg( 'uuid', $member['uuid'], $url_base_idpal ); // new $member['uuid'] ?>
-																<li>
-																	<span class="indicator status-<?=$member['status']?>"></span><span class="indicator step-<?$member['step']?>"></span>
-																	<?
-																	echo sprintf("User <a href='mailto:%1s' title='%2s' target='_blank'>%3s</a>, started %4s%5s (AML package step <a href='#' title='%6s'>%7s</a>) has currently ID-Pal status %8s.",
-																		$member['email'].'?subject='.urlencode('ID Verification Outstanding').'&body=Please complete your ID Verification using your unique ID-Pal URL unique ID Pal URL '.$url_unique_idpal.'.',
-																		'', //print_r($member,1),
-																		$member['email'],
-																		date('Y-m-d H:i:s', $member['started']),
-																		(!empty($member['updated'])?', updated '.date('Y-m-d H:i:s', $member['updated']):''),
-																		'0: AML package created, 1: link sent, 2: docs submitted',
-																		$member['step'],
-																		(!empty($member['submissions'])?'<a href="#" title="'.$error_codes[$member['submissions'][0]['status']].'">'.$member['submissions'][0]['status'].'</a>':'<a href="#" title="'.$error_codes[0].'">0</a>')
-																		// (!empty($member['submissions'])?'<a href="#" title="'.$error_codes[$member['submissions'][0]['status']].'">'.$member['submissions'][0]['status'].'</a>':'<a href="#" title="'.$error_codes[0].'">0</a>')
-																	);
-																	?>
-																</li>
-															<? } else { ?>
-																<? // these users should be complete ?>
-																<li><?=$member['email']?> is status <?=$member['status']?>.</li>
-															<? } // empty($member['status']) ?>
-														<? } // $contacts_package['members'] as $member ?>
-														</ul>
-													</div>
-												<? endif; // !empty($contacts_package['members']) ?>
-												<? $j++; ?>
-											<? else: ?>
-												<p>Package is complete</p>
-												<? Handy\I_Handy::tip($contacts_package); ?>
-											<? endif; // empty($contacts_package['status']) ) ?>
+											<p>Package is <?=(empty($contacts_package['status'])?'incomplete':'complete')?>.</p>
+											<? // Handy\I_Handy::tip($contacts_package); ?>
+											<? if ( !empty($contacts_package['members']) ): ?>
+												<div class="details">
+													<? foreach ( $contacts_package['members'] as $member ) { ?>
+														<? // Handy\I_Handy::tip($member); ?>
+														<div class="card">
+															<div class="card-body">
+																<div class="indicators"><a href="#" title="Status: <?=$member['status']?>"><span class="indicator status-<?=$member['status']?>"></span></a><a href="#" title="Step: <?=$member['step']?>"><span class="indicator step-<?=$member['step']?>"></span></a></div>
+																<ul class="list-unstyled">
+																	<li><strong>Email:</strong> <a href='mailto:<?=$member['email']?>' title='' target='_blank'><?=$member['email']?></a></li>
+																	<li><strong>Start:</strong> <?=date('Y-m-d H:i:s', $member['started'])?></li>
+																	<li><strong>Updated:</strong> <?=(!empty($member['updated'])?date('Y-m-d H:i:s', $member['updated']):'')?></li>
+																	<li><strong>Step</strong>: <?=$member['step']?> / <?=(count($step_meanings)-1)?>  - <?=$step_meanings[$member['step']]?> ( <? foreach ($step_meanings as $k=>$v): echo $k . ': ' . $v . ' '; endforeach; ?>)</li>
+																	<? if ( empty($member['status']) ): ?>
+																		<? $url_unique_idpal = add_query_arg( 'uuid', $member['uuid'], $url_base_idpal ); // new $member['uuid'] ?>
+																		<li><a href='mailto:<?=$member['email']?>?subject=<?=urlencode('ID Verification Outstanding')?>&body=Please complete your ID Verification using your unique ID-Pal URL unique ID Pal URL <?=$url_unique_idpal?>.' title='Email this user' target='_blank' class='btn btn-link'>Email this user</a></li>
+																	<? endif; ?>
+																	<? if ( !empty($member['submissions']) ): ?>
+																		<li><?=$member['submissions'][0]['status']?>, <?=$error_codes[$member['submissions'][0]['status']]?></li>
+																	<? endif; ?>
+																</ul>
+																<?
+																/*echo sprintf("User <a href='mailto:%1s' title='%2s' target='_blank'>%3s</a>, started %4s%5s (AML package step <a href='#' title='%6s'>%7s</a>) has currently ID-Pal status %8s.",
+																	$member['email'].'?subject='.urlencode('ID Verification Outstanding').'&body=Please complete your ID Verification using your unique ID-Pal URL unique ID Pal URL '.$url_unique_idpal.'.',
+																	'', //print_r($member,1),
+																	$member['email'],
+																	date('Y-m-d H:i:s', $member['started']),
+																	(!empty($member['updated'])?', updated '.date('Y-m-d H:i:s', $member['updated']):''),
+																	'0: AML package created, 1: link sent, 2: docs submitted',
+																	$member['step'],
+																	(!empty($member['submissions'])?'<a href="#" title="'.$error_codes[$member['submissions'][0]['status']].'">'.$member['submissions'][0]['status'].'</a>':'<a href="#" title="'.$error_codes[0].'">0</a>')
+																	// (!empty($member['submissions'])?'<a href="#" title="'.$error_codes[$member['submissions'][0]['status']].'">'.$member['submissions'][0]['status'].'</a>':'<a href="#" title="'.$error_codes[0].'">0</a>')
+																);*/
+																?>
+															</div> <!-- card-body -->
+														</div> <!-- card -->
+													<? } // $contacts_package['members'] as $member ?>
+												</div>
+											<? endif; // !empty($contacts_package['members']) ?>
+											<? $j++; ?>
 										</div>
 									</td>
 								</tr>

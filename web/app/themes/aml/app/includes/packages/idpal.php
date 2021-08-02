@@ -291,6 +291,37 @@
 	}
 	/*
 	*
+	*
+	* error codes from submissions
+	*
+	*/
+	function get_error_codes() {
+		$codes = [
+			'No submission received', // 0
+			'No submission received and no errors in technical checks, but report not generated', // 1
+			'Submission received with errors in technical checks, and report not generated', // 2
+			'Report Flagged by user', // 3
+			'CDD generated and all technical checks passed', // 4
+			'CDD generated but some technical checks failed (e.g. manual over-ride was used)', // 5
+		];
+		return $codes;
+	}
+	/*
+	*
+	*
+	* get step (used in 'contacts package') explanations
+	*
+	*/
+	function get_step_meanings() {
+		$codes = [
+			'AML package created', // 0
+			'Link sent', // 1
+			'Documents submitted', // 2
+		];
+		return $codes;
+	}
+	/*
+	*
 	* sendAppLink
 	*
 	* @desc:
