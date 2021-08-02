@@ -46,7 +46,6 @@
 								<th>ID</th>
 								<th>Email</th>
 								<th>Name</th>
-								<th>Entity</th>
 								<th>Status</th>
 								<th>Added</th>
 								<th></th>
@@ -94,7 +93,6 @@
 	                                <td><?=$client->ID?></td>
 	                                <td><?=$client_name?></td>
 	                                <td><?=$client->user_email?></td>
-	                                <td><?=$fields['entity_type']?></td>
 	                                <td><span class="indicator status-<?=$contacts_package['status']?>"></span></td>
 	                                <td><?=date( 'd-m-Y', strtotime( $client_data->user_registered ) )?></td>
 	                                <td><? if ( empty($contacts_package) ): ?><a href="#" class="idpal_btn_submit_user" data-id="<?=$client->ID?>" title="Send this user to ID Pal">Begin</a><? endif; ?></td>
@@ -154,7 +152,7 @@
 																				<li><strong>Added</strong>: <?=date( 'd-m-Y H:i:s', strtotime( $client_data->user_registered ) )?></li>
 																				<li><strong>Email:</strong> <a href='mailto:<?=$member['email']?>' title='' target='_blank'><?=$member['email']?></a></li>
 																				<? if ( !empty($fields['code']) ): ?><li><strong>Code</strong>: <?=$fields['code']?></li> <? endif; ?>
-																				<? if ( !empty($fields['entity_type']) ): ?><li><strong>Entity</strong>: <?=$fields['entity_type']?></li> <? endif; ?>
+																				<? if ( !empty($fields['entity_type']) ): ?><li><strong>Entity</strong>: <?=ucfirst($fields['entity_type'])?></li> <? endif; ?>
 																				<? if ( !empty($fields['partner']) ): ?><li><strong>Partner</strong>: <?=$fields['partner']?></li> <? endif; ?>
 																				<? if ( !empty($fields['manager']) ): ?><li><strong>Manager</strong>: <?=$fields['manager']?></li> <? endif; ?>
 																				<? if ( !empty($fields['lead_staff']) ): ?><li><strong>Lead Staff</strong>: <?=$fields['lead_staff']?></li> <? endif; ?>
