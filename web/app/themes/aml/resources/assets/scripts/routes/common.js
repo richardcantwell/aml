@@ -7,6 +7,7 @@ export default {
         $( 'a.idpal_btn_submit_user' ).on( 'click', function(e) {
             e.stopPropagation();
             var btn = $(this);
+            alert(aml_vars.ajax_url);
             // console.log(aml_vars.ajax_url);
             // console.log($(this).data('id'));
             var user_id = btn.data('id'); console.log('user_id clicked .. ' + user_id); // alert(user_id);
@@ -22,6 +23,9 @@ export default {
                     console.log('response = ' + response);
                     // alert(response);
                     btn.text('Initiated');
+                    setTimeout(function() {
+                        location.reload();
+                    }, 3000);
                 },
             });
             return false;
