@@ -328,6 +328,7 @@
 										<th>Code</th>
 										<th>ID</th>
 										<th>Client</th>
+										<th>Progress</th>
 										<th>Companion</th>
 										<th>IDPal</th>
 										<th></th>
@@ -379,7 +380,7 @@
 					                    [updated] => 1633621095
 					                    [finished] => 1633621355
 										*/
-										$sumission_summary = get_package_member_status($package); // assume only one member per package
+										$sumission_summary = get_package_submission_summary($package); // assume only one member per package
 							   			// Handy\I_Handy::tip($sumission_summary);
 										?>
 		                                <tr class="accordion-toggle collapsed" id="accordion-client-<?=$client->ID?>" data-toggle="collapse" data-parent="#accordion-client-<?=$client->ID?>" href="#collapse-client-<?=$client->ID?>">
@@ -389,14 +390,21 @@
 			                                <td><?=$client->ID?></td>
 			                                <td><?=$client->user_email?></td> <? /* <?=$client_name?><?=(!empty($fields['business_name'])?' ('.$fields['business_name'].')':'')?> */ ?>
 			                                <td>
-			                                	<? $s=0; foreach ( $config['companion_steps'] as $step ): ?>
-			                                		<a href="#" title="Meaning: <?$code['meaning']?>"><span class="indicator<?=($s == $package['status']['companion']?' step-' . $package['status']['companion'] : '')?>"><?=$s?></span></a>
-			                                	<? $s++; endforeach; ?>
+			                                	<? if ( !empty($package) ): ?>
+				                                	<? $s=0; foreach ( $config['companion_steps'] as $step ): ?>
+				                                		<a href="#" title="Meaning: <?$step['meaning']?>"><span class="indicator<?=($s == $package['status']['companion']?' step-' . $package['status']['companion'] : '')?>"><?=$s?></span></a>
+				                                	<? $s++; endforeach; ?>
+			                                	<? endif; ?>
 			                                </td>
 			                                <td>
-			                                	<? $c=0; foreach ( $config['status_codes'] as $code ): ?>
-			                                		<a href="#" title="Meaning: <?$code['meaning']?> Desc: <?$code['desc']?> Meaning: <?$code['meaning']?>"><span class="indicator<?=($c == $package['status']['idpal']?' status-' . $package['status']['idpal'] : '')?>"><?=$c?></span></a> <? /* status-<?=$c?>" */ ?>
-			                                	<? $c++; endforeach; ?>
+				                            	<a href="#" title=""><span class="indicator<?=($package['status']['companion']?' cstatus-' . $package['status']['companion'] : '')?>"><?=$package['status']['companion']?></span></a>
+			                                </td>
+			                                <td>
+			                                	<? if ( !empty($package) ): ?>
+				                                	<? $c=0; foreach ( $config['status_codes'] as $code ): ?>
+				                                		<a href="#" title="Meaning: <?$code['meaning']?> Desc: <?$code['desc']?> Meaning: <?$code['meaning']?>"><span class="indicator<?=($c == $package['status']['idpal']?' status-' . $package['status']['idpal'] : '')?>"><?=$c?></span></a> <? /* status-<?=$c?>" */ ?>
+				                                	<? $c++; endforeach; ?>
+			                                	<? endif; ?>
 
 			                                	<? /*if ( !empty($package) ): ?>
 			                                		<a href="https://client.id-pal.com/submission/<?=$sumission_summary[0]['id']?>" title="Companion status <?=$package['status']['companion']?>"><span class="indicator status-<?=$package['status']['companion']?>"></span></a>
@@ -642,7 +650,7 @@
 										   			[2]
 										   			..
 										*/
-										$sumission_summary = get_package_member_status($contacts_package); // assume only one member per package
+										$sumission_summary = get_package_submission_summary($contacts_package); // assume only one member per package
 							   			// Handy\I_Handy::tip($sumission_summary);
 										?>
 		                                <tr class="accordion-toggle collapsed" id="accordion-client-<?=$client->ID?>" data-toggle="collapse" data-parent="#accordion-client-<?=$client->ID?>" href="#collapse-client-<?=$client->ID?>">
@@ -1298,7 +1306,7 @@
 						?>
 						<? if ( empty($contacts_package['status']) ) { ?>
 							<? $business_name = get_field('business_name', 'user_' . $client->ID); ?>
-							<p><strong><?=$i?></strong>) Displaying incomplete ID Pal tasks for client <a href="<?=admin_url('user-edit.php?user_id='.$client->ID.'&wp_http_referer=%2Fwp%2Fwp-admin%2Fusers.php')?>" title="User ID: <?=$client->ID?> | Package: <?=print_r($contacts_package,1)?>" target="_blank"><?=$client->user_email?></a><?=(!empty($business_name)?' ('.$business_name.')':'')?>:</p>
+							<p><strong><?=$i?></strong>) Displaying incomplete ID Pal tasks for client <a href="<?=admin_url('user-edit.php?user_id='.$client->ID)?>" title="User ID: <?=$client->ID?> | Package: <?=print_r($contacts_package,1)?>" target="_blank"><?=$client->user_email?></a><?=(!empty($business_name)?' ('.$business_name.')':'')?>:</p>
 							<? if ( !empty($contacts_package['members']) ) { ?>
 								<div class="transaction" style="border:1px solid gray; padding: 10px; margin-bottom: 10px;">
 									<ul>
@@ -1541,14 +1549,12 @@
 						if ( !empty($client) ) {
 							error_log('process_idpal_webhook_response() | event_type = ' . $data['event_type'] . ', client ID ( ' . $client_id . ') found for UUID ' . $data['uuid']);
 							// what event is it?
+							error_log('process_idpal_webhook_response() | event_type = ' . $data['event_type']); 
 					    	if ( $data['event_type'] == 'new_submission_start' ) {
-					    		error_log('process_idpal_webhook_response() | event_type = ' . $data['event_type']); 
 					    	} elseif ( $data['event_type'] == 'submission_expired' ) { 
-					    		error_log('process_idpal_webhook_response() | event_type = ' . $data['event_type']); 
 					    	} elseif ( $data['event_type'] == 'submission_complete' ) { 
-					    		error_log('process_idpal_webhook_response() | event_type = ' . $data['event_type']); 
+					    	} elseif ( $data['event_type'] == 'cdd_complete' ) { 
 					    	} elseif ( $data['event_type'] == 'ping' ) { 
-					    		error_log('process_idpal_webhook_response() | event_type = ' . $data['event_type']); 
 					    	}
 							wp_mail( $config['admin_email'], '[Type: Debug | Module: IDPal', '[user/idpal.php -> process_idpal_webhook_response() ] | response data for client <a href="' . admin_url('user-edit.php?user_id=' . $client_id) . '">' . $client_id . '</a>: <pre>' . print_r($data, 1) . '</pre>' );
 							process_user_package ($client->ID, $data);
@@ -1637,7 +1643,7 @@
 			$config = Config\get_config();
 			$package = get_user_meta($client_id, 'aml_package', true);
 			if ( !empty($package) ) {
-				if ( empty($package['status']['companion']) ) {
+				//if ( empty($package['status']['companion']) ) {
 					// package is incomplete
 					$package_updated = $package;
 					if ( !isset($package['overwritten']) ) {
@@ -1653,19 +1659,21 @@
 							if ($result['status'] == 'success') { // we have results (there is a submission entry from $member['uuid'])
 								if ( !empty($result['response']['submissions']) && is_array($result['response']['submissions']) ) { // to negate 'No submissions recieved' response
 									$submission_latest = end($result['response']['submissions']); // pick the latest (not sure if there are more)
+									// wp_mail( $config['admin_email'], '[Type: Debug | Module: IDPal', '[user/idpal.php -> process_contacts_package()] | client ' . $client_id . ' - member uuid ' . $data['uuid'] . ' | ' . $data['event_type'] . '| submissions: <pre>' . print_r($result['response']['submissions'], 1) . '</pre> | submission_latest ' . print_r($submission_latest, 1) );
 									$package_updated['submissions'][$data['submission_id']]['details'] = $submission_latest;
-									$package_updated['status']['idpal'] = $submission_latest[0]['status'];  
+									$package_updated['status']['idpal'] = $submission_latest['status'];  
 								}
 							}
 							// ------ end [query AppLinkStatus()] -----
 							if ( $data['event_type'] == 'submission_complete' ) {
 								// client has completed their tasks - so mark ['status']['companion'] as completed
 								$package_updated['status']['companion'] = 1;  // complete
-								$package_updated['step'] = 2; // 2/3
+								$package_updated['step'] = 2; // 2/2
 								$package_updated['finished'] = time(); // not 100% accurate - within the time between CRON calls
-							} elseif ( $data['event_type'] == 'xxx' ) {
+							} elseif ( $data['event_type'] == 'cdd_complete' ) {
 								// report generated
-								$package_updated['step'] = 3; // 3/3
+								// $package_updated['step'] = 3; // 3/3
+								$package_updated['report'] = time();
 							}
 							// save
 							update_user_meta( $client_id, 'aml_package', $package_updated );
@@ -1674,12 +1682,12 @@
 						} // $package['uuid'] == $data['uuid']
 					}
 					// do tidy up
-					$package = get_user_meta( $client_id, 'aml_package', true);
-					if ( $package['status'] == 1 ) {
+					$package = get_user_meta($client_id, 'aml_package', true);
+					if ( !empty($package['status']['companion']) ) {
 						// error_log('complete_client() called');
-						tidy_up( $client_id, $package_updated );
+						tidy_up( $client_id );
 					}
-				} // empty($package['status'])
+				//} // empty($package['status']['companion'])
 			} // !empty($package)
 		}
 		/*
@@ -1778,68 +1786,60 @@
 		* that a packet has been completed.
 		*
 		*/
-		function tidy_up ( $client_id, $package ) {
+		function tidy_up ( $client_id ) {
 			if (empty($client_id)) return;
 			$config = Config\get_config();
-			$client = get_user_by( 'id', $client_id );
+			error_log('tidy_up() called for client ' . $client_id);
+			$client = get_user_by( 'id', $client_id ); // Handy\I_Handy::tip($client); die('here');
+			error_log('tidy_up() called for client ' . $client->ID);
 			$package = get_user_meta($client->ID, 'aml_package', true);
 			if ( !empty($package) ) {
-				// assume that we have only one client per packages		
-				$member_summary_translated = '';
-				$member_summary = get_package_member_status($package); // get the member information (only 1 member)
-				if ( !empty($member_summary) ) {
-					$member_summary_translated = $config['error_codes'][$member_summary['status']];
-				} 
-				// package is complete
-				if ( !empty($package['status']) ) {
-					// 1. email administrator
-					$business_name = get_field('business_name', 'user_' . $client->ID);
-					error_log('complete_client() called for client ' . $client->ID . '|' . $client->user_email . '|' . $client->first_name . '|' . $client->last_name  . '|' . $business_name);
-					$mail_args = [
-						'to' => $config['admin_email'],
-						//'headers' => [
-						//	'Content-Type' => 'text/html; charset=UTF-8',
-						//	'Cc' => 'Richard Cantwell <hello@hootfish.ie>', // debugging
-						//],
-						'subject' => 'Contacts ID-Pal ID/POA submission and verification complete',
-						'body' => sprintf(
-									"Administrator,
-									<br><br>All contacts in contacts package initiated by client <a href='mailto:%1s'>%2s %3s</a>%4s have now completed their ID-Pal ID/POA submission and verification. 
-									<br><br>This client has been notified.
-									<br><br>Some details:
-									<br>Submission state: %5s
-									<br>UUID: %6s
-									<br>Meaning: %7s
-									<br>Description: %8s
-									<br>Action: %9s",
-									$client->user_email,
-									$client->first_name,
-									$client->last_name,
-									(!empty($business_name)?' ('.$business_name.')':''),
-									$member_summary['status'],
-									$member_summary['uuid'],
-									$member_summary_translated['meaning'],
-									$member_summary_translated['desc'],
-									$member_summary_translated['action']
-								),
-					];
-					$result_admin = Comms\emailUser($mail_args);
-					// 2. email user and tell them that they're finished
-					$mail_args = [
-						'to' => $client->user_email,
-						'headers' => [
-							'Content-Type' => 'text/html; charset=UTF-8',
-							'Bcc' => $config['admin_email'], // debugging
-						],
-						'subject' => 'ID & POA Verification complete',
-						'body' => sprintf(
-							"Hi %1s,<br><br>ID verification & POS is now complete for your business.",
-							$client->first_name
-						),
-					];
-					$result_client = Comms\emailUser($mail_args);
-					// Handy\I_Handy::tip($response);
-				} // !empty($updated_contacts['status'])
+				// 1. email administrator
+				$business_name = get_field('business_name', 'user_' . $client->ID);
+				error_log('tidy_up() called for client ' . $client->ID . '|' . $client->user_email . '|' . $client->first_name . '|' . $client->last_name  . '|' . $business_name);
+				$mail_args = [
+					'to' => $config['admin_email'],
+					//'headers' => [
+					//	'Content-Type' => 'text/html; charset=UTF-8',
+					//	'Cc' => 'Richard Cantwell <hello@hootfish.ie>', // debugging
+					//],
+					'subject' => 'Contacts ID-Pal ID/POA submission and verification complete',
+					'body' => sprintf(
+								"Administrator,
+								<br><br>All contacts in contacts package initiated by client %1s have now completed their ID-Pal ID/POA submission and verification.
+								<br><br>Some details:
+								<br><br>Status (Companion): %2s
+								<br>Status (ID Pal): %3s
+								<br>UUID: %4s
+								<br>Meaning: %5s
+								<br>Description: %6s
+								<br>Action: %7s",
+								'<a href="'.admin_url('user-edit.php?user_id='.$client->ID).'">'.$client->display_name.(!empty($business_name)?' ('.$business_name.')':'').'</a>',
+								$package['status']['companion'],
+								$package['status']['idpal'],
+								$package['uuid'],
+								$config['status_codes'][$package['status']['idpal']]['meaning'],
+								$config['status_codes'][$package['status']['idpal']]['desc'],
+								$config['status_codes'][$package['status']['idpal']]['action']
+							),
+				];
+				// Handy\I_Handy::tip($mail_args); die('here');
+				$result_admin = Comms\emailUser($mail_args);
+				// 2. email user and tell them that they're finished
+				$mail_args = [
+					'to' => $client->user_email,
+					'headers' => [
+						'Content-Type' => 'text/html; charset=UTF-8',
+						'Bcc' => $config['admin_email'], // debugging
+					],
+					'subject' => 'ID & POA Verification complete',
+					'body' => sprintf(
+						"Hi %1s,<br><br>ID verification & POS is now complete for your business.",
+						$client->display_name
+					),
+				];
+				$result_client = Comms\emailUser($mail_args);
+				// Handy\I_Handy::tip($response);
 			} // !empty($contacts) // this client has a contacts package
 		}
 		/*
@@ -1861,7 +1861,7 @@
 			if ( !empty($contacts) ) {
 				// assume that we have only one client per packages		
 				$member_summary_translated = '';
-				$member_summary = get_package_member_status($contacts); // get the member information (only 1 member)
+				$member_summary = get_package_submission_summary($contacts); // get the member information (only 1 member)
 				if ( !empty($member_summary) ) {
 					$member_summary_translated = $config['error_codes'][$member_summary['status']];
 				} 
@@ -1975,21 +1975,16 @@
 		function get_client_by_uuid ( $uuid ) {
 			if (empty($uuid)) return;
 			$clients = get_users([
-				'meta_key' => 'aml_company_contacts'
+				'meta_key' => 'aml_package'
 			]);
 			if ( !empty($clients) ) {
 				foreach ($clients as $client) {
-					$contacts = get_user_meta($client->ID, 'aml_company_contacts', true);
-					if ( !empty($contacts) ) {
-						foreach ($contacts['members'] as $member) {
-							if ( !isset($member['overwritten']) ) {
-								if ( $member['uuid'] == $uuid ) {
-									//Handy\I_Handy::tip($member);
-									return $client;
-								}
-							} // !isset($member['overwritten'])
-						} // $contacts['members'] as $member
-					} // !empty($contacts)
+					$package = get_user_meta($client->ID, 'aml_package', true); // Handy\I_Handy::tip($package);
+					if ( !empty($package) ) {
+						if ( !isset($package['overwritten']) ) {
+							if ( $package['uuid'] == $uuid ) return $client;
+						} // !isset($member['overwritten'])
+					} // !empty($package)
 				} // $clients as $client
 			} // !empty($clients)
 		}
@@ -1998,21 +1993,18 @@
 		* get a packages member status (we assume we only ever have 1)
 		*
 		*/
-		function get_package_member_status ($package) {
+		function get_package_submission_summary ($package) {
 			if ( empty($package) ) return;
-			if ( empty($package['members']) ) return;
-			$member_summary = [];
-			foreach ( $package['members'] as $member ) {
-				if ( !empty($member['submissions']) ) {
-					foreach ( $member['submissions'] as $k=>$v ) {
-						$member_summary[] = [
-							'id' => $k,
-							'status' => $v['details']['status'],
-						];
-					}
+			$summary = [];
+			if ( !empty($package['submissions']) ) {
+				foreach ( $package['submissions'] as $k=>$v ) {
+					$summary[] = [
+						'id' => $k,
+						'status' => $v['details']['status'],
+					];
 				}
 			}
-			return $member_summary;
+			return $summary;
 		}
 	/* Admin - user (client) columns
 	-------------------------------------------------------------- */

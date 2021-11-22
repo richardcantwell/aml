@@ -303,10 +303,13 @@
 		if ($result['status'] == 'success') { 
 			Handy\I_Handy::tip($result); die();
 		}*/
-		//$uuid = 'c8297d9';
-		//$client = IdPalUser\get_client_by_uuid('c8297d9');
+		//$uuid = 'cd3e20b1';
+		//$client = IdPalUser\get_client_by_uuid($uuid);
 		//Handy\I_Handy::tip($client); die('DEBUG');
-
+		$client_id = 49;
+		//$client = get_user_by( 'id', $client_id );
+		//Handy\I_Handy::tip($client); die('DEBUG');
+		//IdPalUser\tidy_up ( $client_id ); die('DEBUG');
 	}
 	/*
 	*
