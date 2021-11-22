@@ -107,7 +107,7 @@ table {
             }
             span {
                 &.indicator {
-                    display: inline-block; width: 15px; height: 15px; margin-top: 2px; border-radius: 50%; border: 1px solid white; background-color: #ccc; font-size: 10px; color: black; padding-left: 3px;
+                    display: inline-block; width: 17px; height: 17px; margin-top: 2px; padding-left: 4px; border-radius: 50%; border: 1px solid white; background-color: #ccc; font-size: 10px; color: black;
                     // status
                     &.status-0 { background-color: #ED2938; }
                     &.status-1 { background-color: #B25F4A; }
