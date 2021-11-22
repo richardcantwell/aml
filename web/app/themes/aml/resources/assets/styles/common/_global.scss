@@ -107,7 +107,7 @@ table {
             }
             span {
                 &.indicator {
-                    display: inline-block;width: 15px;height: 15px;margin-top: 2px;border-radius: 50%;border: 1px solid white;
+                    display: inline-block;width: 15px;height: 15px;margin-top: 2px;border-radius: 50%;border: 1px solid white; background-color: #ccc;
                     &.status-0 { background-color: red; }
                     &.status-1 { background-color: green; }
                     &.step-0 { background-color: red; }

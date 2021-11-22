@@ -8,6 +8,7 @@
 	// use Custom\Config;
 
     use Custom\Package\IdPal;
+    use Custom\User\IdPal as IdPalUser;
 	use Custom\User\Comms;
 
 	/*
@@ -265,12 +266,47 @@
 	*/
 	/*
 	*
-	* test WPE error logging
+	* test anything
 	*
 	*/
-	add_action('template_redirect', __NAMESPACE__ . '\\test_wpe_error_logging');
-	function test_wpe_error_logging () {
-		// error_log('Testing WPE error logging');
+	add_action('template_redirect', __NAMESPACE__ . '\\test_anything');
+	function test_anything () {		
+		//	IdPalUser\translate_idpal_status(1);
+		/*$mail_args = [
+			'to' => 'hello@hootfish.ie',
+			'headers' => [
+				'Content-Type' => 'text/html; charset=UTF-8',
+				'Cc' => 'liverpoolrc@yahoo.com, liverpoolrc@gmail.com',
+			],
+			'subject' => 'Test email from AML',
+			'body' => sprintf(
+				"Hi,
+				<br /><br />This is a %1s",
+				'test'
+			),
+		];
+		//Handy\I_Handy::tip($mail_args); die();
+		$email_sent = Comms\emailUser($mail_args); //Handy\I_Handy::tip($email_sent); die();*/
+
+		/*$uuid = 'c8297d9';
+		$args = [
+			'days' => 25, // last X days - leaving blank shows 'all' submissions ever (too much)
+			// 'status' => 0,
+			//'uuid' => $member['appinstance'], // old 4.2.1 - depreciate eventually // 'ca08f1c1', // $member['appinstance']
+			'uuid' => $uuid, // new 4.5.0
+		];
+		$result = IdPal\AppLinkStatus($args); // Handy\I_Handy::tip($result); die(); // see http://prntscr.com/nzzo82 // 9505 | 064a7bc4 |
+		//error_log('user.php -> idpal_get_progress_uuids() | AppLinkStatus() | ' . print_r($args,1) . ' | result: ' . print_r($result,1) );
+		//if( current_user_can('administrator') ) {
+		// Handy\I_Handy::tip($result); // die(); // see http://prntscr.com/nzzo82 // 9505 | 064a7bc4 |
+		//}
+		if ($result['status'] == 'success') { 
+			Handy\I_Handy::tip($result); die();
+		}*/
+		//$uuid = 'c8297d9';
+		//$client = IdPalUser\get_client_by_uuid('c8297d9');
+		//Handy\I_Handy::tip($client); die('DEBUG');
+
 	}
 	/*
 	*

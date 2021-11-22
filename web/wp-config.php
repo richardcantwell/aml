@@ -1,5 +1,5 @@
 <?php
-define( 'WP_CACHE', false ); 
+define( 'WP_CACHE', true ); 
 /**
  * The base configurations of the WordPress.
  *
@@ -16,11 +16,11 @@ define( 'WP_CACHE', false );
  */
 // ** MySQL settings - You can get this info from your web host ** //
 /** The name of the database for WordPress */
-define('DB_NAME', 'vugftgcpaj');
+define('DB_NAME', 'wmjsebxfur');
 /** MySQL database username */
-define('DB_USER', 'vugftgcpaj');
+define('DB_USER', 'wmjsebxfur');
 /** MySQL database password */
-define('DB_PASSWORD', 'vpnaJ2a46h');
+define('DB_PASSWORD', 'bMksbr8zq7');
 /** MySQL hostname */
 define('DB_HOST', 'localhost');
 /** Database Charset to use in creating database tables. */
@@ -45,7 +45,7 @@ require('wp-salt.php');
  * You can have multiple installations in one database if you give each a unique
  * prefix. Only numbers, letters, and underscores please!
  */
-$table_prefix  = 'wp_';
+$table_prefix = 'wp_';
 /**
  * WordPress Localized Language, defaults to English.
  *
@@ -65,13 +65,13 @@ define('FS_CHMOD_FILE', (0664 & ~ umask()));
  * It is strongly recommended that plugin and theme developers use WP_DEBUG
  * in their development environments.
  */
-define('WP_DEBUG', false);
-/* Multisite */
-define( 'WP_ALLOW_MULTISITE', true );
+define('WP_DEBUG', true);
+define('WP_ALLOW_MULTISITE', true);
+define('DOMAIN_CURRENT_SITE', 'aml.tynandillon.ie');
+
 /* That's all, stop editing! Happy blogging. */
 /** Absolute path to the WordPress directory. */
 if ( !defined('ABSPATH') )
         define('ABSPATH', dirname(__FILE__) . '/');
 /** Sets up WordPress vars and included files. */
 require_once(ABSPATH . 'wp-settings.php');
-define('DOMAIN_CURRENT_SITE', 'aml.tynandillon.ie');

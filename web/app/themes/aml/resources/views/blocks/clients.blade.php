@@ -32,7 +32,7 @@ $users = get_users( $args );
 <div id="<?php echo esc_attr($id); ?>" class="<?php echo esc_attr($className); ?>">
 	<? if ( !empty($users) ): ?>
 		<?
-		IdPal\user_idpal_summary();
+		IdPal\user_idpal_summary_v2();
 		?>
 	<? endif; ?>
 </div>

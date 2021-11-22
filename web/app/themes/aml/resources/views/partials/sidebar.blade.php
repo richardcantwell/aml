@@ -18,5 +18,29 @@
 				</div> <!-- .card -->
 			<?php endif; ?>
 		</div> <!-- .stats -->
+		<div class="codes" style="padding: 1rem; width:200px; height: 200px; overflow: scroll;">
+			<?php if ( !empty($data['config']) ): ?>
+				<table class="table table-dark table-sm" style="font-size: 8px;">
+					<thead>
+						<tr>
+							<th scope="col">#</th>
+							<th scope="col">Meaning</th>
+							<th scope="col">Desc</th>
+							<th scope="col">Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php $i=0;foreach ($data['config']['status_codes'] as $code): ?>
+						<tr>
+							<th><?=$i?></th>
+							<td><?=$code['meaning']?></td>
+							<td><?=$code['desc']?></td>
+							<td><?=$code['action']?></td>
+						</tr>
+						<?php $i++;endforeach; ?>
+					</tbody>
+				</table>
+			<?php endif; ?>
+		</div> <!-- .codes -->
 	</div> <!-- .sidebar-sticky -->
 </nav> <!-- .sidebar -->

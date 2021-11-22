@@ -132,7 +132,7 @@ add_action('after_setup_theme', function () {
 
 /* [rc]
 ----------------------------------------------------------------*/
-wp_localize_script( 'sage/main.js', 'aml_vars', array(
+/*wp_localize_script( 'sage/main.js', 'aml_vars', array(
     'ajax_url' => admin_url('admin-ajax.php'),
     'ajax_nonce' => wp_create_nonce('my_nonce'),
-));
+));*/

@@ -306,6 +306,50 @@
 		];
 		return $codes;
 	}
+
+	/*
+	*
+	*
+	*
+	*
+	*/
+
+	function get_status_codes () {
+		$codes = [
+			[
+				'meaning' => 'No submission received',
+				'desc' => 'We have this covered as Clients are nudged (reminder emails every 24 hours - or we can alter this time period)',
+				'action' => 'No action - as automatic notification system reminds client periodically',
+			],
+			[
+				'meaning' => 'Submission received and no errors in technical checks, but report not generated',
+				'desc' => 'This occurs when a client has submitted - but the vendor (you) havent gone in to do your manual verifications. This used to be the "green" traffic light in the AML portal before you indicated that you needed more specific information about the other statuses.',
+				'action' => 'Vendor receives an email to say client has submitted with status 1 and provides a link for them to start their manual verification. Status 1 will appear in the portal against this client.',
+			],
+			[
+				'meaning' => 'Submission received with errors in technical checks, and report not generated',
+				'desc' => 'Client submits but there are auto flags. These sort of submissions generate \'Alerts\'',
+				'action' => 'Vendor receives an email to say client has submitted with status 2 and provides a link for them to start their manual verification and specifically address the technical failures. Status 2 will appear in the portal against this client.',
+			],
+			[
+				'meaning' => 'Report Flagged by user',
+				'desc' => 'Client submits then vendor flags something whilst they carry out their manual verifications. I assume that the vendor does not continue to generate a report here either - and just \'saves\'.',
+				'action' => 'No action - as the vendor is already in the system. Status 3 will appear in the portal against this client.',
+			],
+			[
+				'meaning' => 'CDD generated and all technical checks passed',
+				'desc' => 'This is the ultimate \'green\'',
+				'action' => 'No action - Status 4 (green) will appear in the portal against this client (this is a double green case).',
+			],
+			[
+				'meaning' => 'CDD generated but some technical checks failed (e.g. manual over-ride was used)',
+				'desc' => 'Client submits but there are auto technical checks but vendor generates report in any case (assumption is that vendor deems technical alerts ok?)',
+				'action' => 'No action - Status 5 will appear in the portal against this client',
+			]
+		];
+		return $codes;
+	}
+
 	/*
 	*
 	*
