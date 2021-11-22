@@ -289,12 +289,14 @@
 		*/
 		return 537; // save an unesessary api call
 	}
+
 	/*
 	*
 	*
-	* error codes from submissions
+	* error codes from submissions (replaced by get_status_codes())
 	*
 	*/
+
 	function get_error_codes() {
 		$codes = [
 			'No submission received', // 0
@@ -348,6 +350,38 @@
 			]
 		];
 		return $codes;
+	}
+
+	/*
+	*
+	*
+	* get step (used in 'package') explanations
+	*
+	*/
+	function get_companion_steps() {
+		$steps = [
+			[
+				'meaning' => 'AML Package Created',
+				'desc' => '',
+				'action' => '',
+			],
+			[
+				'meaning' => 'Link Sent',
+				'desc' => '',
+				'action' => '',
+			],
+			[
+				'meaning' => 'Documents Submitted',
+				'desc' => '',
+				'action' => '',
+			],
+			//[
+			//	'meaning' => 'Vendor Completed',
+			//	'desc' => '',
+			//	'action' => '',
+			//],
+		];
+		return $steps;
 	}
 
 	/*

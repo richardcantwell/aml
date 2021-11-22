@@ -116,9 +116,9 @@ table {
                     &.status-4 { background-color: #00FF7F; color: #FFFFFF; }
                     &.status-5 { background-color: #26B96E; color: #FFFFFF; }
                     // steps
-                    &.step-0 { background-color: red; }
-                    &.step-1 { background-color: orange; }
-                    &.step-2 { background-color: green; }
+                    &.step-0 { background-color: red; color: #FFFFFF; }
+                    &.step-1 { background-color: orange; color: #FFFFFF; }
+                    &.step-2 { background-color: green; color: #FFFFFF; }
                 }
             }
             .details {

@@ -389,7 +389,11 @@
 			                                <td><?=$fields['code']?></td>
 			                                <td><?=$client->ID?></td>
 			                                <td><?=$client->user_email?></td> <? /* <?=$client_name?><?=(!empty($fields['business_name'])?' ('.$fields['business_name'].')':'')?> */ ?>
-			                                <td>Companion</td>
+			                                <td>
+			                                	<? $s=0; foreach ( $config['companion_steps'] as $step ): ?>
+			                                		<a href="#" title="Meaning: <?$code['meaning']?>"><span class="indicator<?=($s == $package['status']['companion']?' step-' . $package['status']['companion'] : '')?>"><?=$s?></span></a>
+			                                	<? $s++; endforeach; ?>
+			                                </td>
 			                                <td>
 			                                	<? $c=0; foreach ( $config['status_codes'] as $code ): ?>
 			                                		<a href="#" title="Meaning: <?$code['meaning']?> Desc: <?$code['desc']?> Meaning: <?$code['meaning']?>"><span class="indicator<?=($c == $package['status']['idpal']?' status-' . $package['status']['idpal'] : '')?>"><?=$c?></span></a> <? /* status-<?=$c?>" */ ?>

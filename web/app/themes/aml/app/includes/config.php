@@ -20,7 +20,7 @@ function get_config() {
 		'url_base_idpal' => get_field('base_url', 'option'),
 		'manager' => get_field('manager', 'option'), // ID Pal Companion 'manager'
 		'status_codes' => IdPal\get_status_codes(), // get status code meanings
-		'step_meanings' => IdPal\get_step_meanings(), // get step meanings // Handy\I_Handy::tip($step_meanings);
+		'companion_steps' => IdPal\get_companion_steps(), // get step meanings // Handy\I_Handy::tip($step_meanings);
 		'debug_ips' => Debug\get_debug_ips(),
 	];
 
