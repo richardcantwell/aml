@@ -392,7 +392,7 @@
 			                                <td>
 			                                	<? if ( !empty($package) ): ?>
 				                                	<? $s=0; foreach ( $config['companion_steps'] as $step ): ?>
-				                                		<a href="#" title="Meaning: <?$step['meaning']?>"><span class="indicator<?=($s == $package['status']['companion']?' step-' . $package['status']['companion'] : '')?>"><?=$s?></span></a>
+				                                		<a href="#" title="Meaning: <?=$step['meaning']?>"><span class="indicator<?=($s == $package['step']?' step-' . $package['step'] : '')?>"><?=$s?></span></a>
 				                                	<? $s++; endforeach; ?>
 			                                	<? endif; ?>
 			                                </td>
@@ -402,16 +402,9 @@
 			                                <td>
 			                                	<? if ( !empty($package) ): ?>
 				                                	<? $c=0; foreach ( $config['status_codes'] as $code ): ?>
-				                                		<a href="#" title="Meaning: <?$code['meaning']?> Desc: <?$code['desc']?> Meaning: <?$code['meaning']?>"><span class="indicator<?=($c == $package['status']['idpal']?' status-' . $package['status']['idpal'] : '')?>"><?=$c?></span></a> <? /* status-<?=$c?>" */ ?>
+				                                		<a href="#" title="Meaning: <?=$code['meaning']?> Desc: <?=$code['desc']?> Meaning: <?=$code['meaning']?>"><span class="indicator<?=($c == $package['status']['idpal']?' istatus-' . $package['status']['idpal'] : '')?>"><?=$c?></span></a> <? /* status-<?=$c?>" */ ?>
 				                                	<? $c++; endforeach; ?>
 			                                	<? endif; ?>
-
-			                                	<? /*if ( !empty($package) ): ?>
-			                                		<a href="https://client.id-pal.com/submission/<?=$sumission_summary[0]['id']?>" title="Companion status <?=$package['status']['companion']?>"><span class="indicator status-<?=$package['status']['companion']?>"></span></a>
-			                                		<? if ( !empty($sumission_summary) ): ?>
-			                                			<a href="https://client.id-pal.com/submission/<?=$sumission_summary[0]['id']?>" title="Vendor status for submission <?=$sumission_summary[0]['id']?> - <?=$config['error_codes'][$sumission_summary[0]['status']]['meaning']?>" target="_blank"><span class="indicator vstatus-<?=$sumission_summary[0]['status']?>"></span></a>
-			                                		<? endif;?>
-			                                	<? endif;*/ ?>
 			                                </td>
 			                                <td><? if ( empty($package) ): ?><a href="#" class="idpal_btn_submit_user" data-id="<?=$client->ID?>" title="Send this user to ID Pal">Begin</a><? endif; ?></td>
 		                                </tr>

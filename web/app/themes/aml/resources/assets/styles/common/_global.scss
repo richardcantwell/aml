@@ -109,19 +109,19 @@ table {
                 &.indicator {
                     display: inline-block; width: 17px; height: 17px; margin-top: 2px; padding-left: 4px; border-radius: 50%; border: 1px solid white; background-color: #ccc; font-size: 10px; color: black;
                     // status (ID Pal)
-                    &.status-0 { background-color: #ED2938; color: #FFFFFF; }
-                    &.status-1 { background-color: #B25F4A; color: #FFFFFF; }
-                    &.status-2 { background-color: #77945C; color: #FFFFFF; }
-                    &.status-3 { background-color: #3BCA6D; color: #FFFFFF; }
-                    &.status-4 { background-color: #00FF7F; color: #FFFFFF; }
-                    &.status-5 { background-color: #26B96E; color: #FFFFFF; }
+                    &.istatus-0 { background-color: #ED2938; color: #FFFFFF; }
+                    &.istatus-1 { background-color: #B25F4A; color: #FFFFFF; }
+                    &.istatus-2 { background-color: #77945C; color: #FFFFFF; }
+                    &.istatus-3 { background-color: #3BCA6D; color: #FFFFFF; }
+                    &.istatus-4 { background-color: #00FF7F; color: #FFFFFF; }
+                    &.istatus-5 { background-color: #26B96E; color: #FFFFFF; }
                     // status (Companion)
                     &.cstatus-0 { background-color: #ED2938; color: #FFFFFF; }
                     &.cstatus-1 { background-color: #26B96E; color: #FFFFFF; }
                     // steps
-                    &.step-0 { background-color: red; color: #FFFFFF; }
-                    &.step-1 { background-color: orange; color: #FFFFFF; }
-                    &.step-2 { background-color: green; color: #FFFFFF; }
+                    &.step-0 { background-color: #ED2938; color: #FFFFFF; }
+                    &.step-1 { background-color: #B25F4A; color: #FFFFFF; }
+                    &.step-2 { background-color: #26B96E; color: #FFFFFF; }
                 }
             }
             .details {
