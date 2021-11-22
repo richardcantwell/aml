@@ -327,10 +327,9 @@
 										<th></th>
 										<th>Code</th>
 										<th>ID</th>
-										<th>Email</th>
+										<th>Client</th>
 										<th>Companion</th>
-										<th colspan="2">IDPal</th>
-										<th>Added</th>
+										<th>IDPal</th>
 										<th></th>
 									</tr>
 								</thead>
@@ -385,7 +384,7 @@
 										?>
 		                                <tr class="accordion-toggle collapsed" id="accordion-client-<?=$client->ID?>" data-toggle="collapse" data-parent="#accordion-client-<?=$client->ID?>" href="#collapse-client-<?=$client->ID?>">
 			                                <? if ( !empty($package) ): ?><td class="expand-button"></td><? else: ?><td></td><? endif; ?>
-			                                <td><img src="<?=$client_avatar?>" alt="<?=$client_name?>"/></td>
+			                                <td><img src="<?=$client_avatar?>" alt="<?=$client_name?>" /></td>
 			                                <td><?=$fields['code']?></td>
 			                                <td><?=$client->ID?></td>
 			                                <td><?=$client->user_email?></td> <? /* <?=$client_name?><?=(!empty($fields['business_name'])?' ('.$fields['business_name'].')':'')?> */ ?>
@@ -406,7 +405,6 @@
 			                                		<? endif;?>
 			                                	<? endif;*/ ?>
 			                                </td>
-			                                <td><?=date( 'd-m-Y', strtotime( $client_data->user_registered ) )?></td>
 			                                <td><? if ( empty($package) ): ?><a href="#" class="idpal_btn_submit_user" data-id="<?=$client->ID?>" title="Send this user to ID Pal">Begin</a><? endif; ?></td>
 		                                </tr>
 		                                <? if ( !empty($package) ): ?>
@@ -449,12 +447,12 @@
 																			<ul class="list-unstyled">
 																				<li><strong>Progress</strong>: 
 																					<ul class="mt-3">
-																						<? foreach ($config['step_meanings'] as $k=>$v): ?>
-																							<? $class = ($package['step']==$k?' class="highlight"':''); ?>
-																							<li><?=$k?>. <span<?=$class?>><?=$v?></span></li>
-																						<? endforeach; ?>
+													                                	<? $s=0; foreach ( $config['companion_steps'] as $step ): ?>
+													                                		<li><?=$s?>. <span class="<?=($s == $package['status']['companion']?'highlight' : '')?>"><?=$step['meaning']?><?=($s===1 && !empty($package['uuid'])?' (<a href="'.add_query_arg( 'uuid', $package['uuid'], $config['url_base_idpal'] ).'" target="_blank">'.$package['uuid'].'</a>)':'')?></span></li>
+													                                	<? $s++; endforeach; ?>
 																					</ul>
 																				</li>
+																				<li><strong>Added:</strong> <?=date( 'd-m-Y H:i:s', strtotime( $client_data->user_registered ) )?></li>
 																				<li><strong>Started:</strong> <?=(!empty($package['started'])?date('d-m-Y H:i:s', $package['started']):'N/A')?></li>
 																				<li><strong>Updated:</strong> <?=(!empty($package['updated'])?date('d-m-Y H:i:s', $package['updated']):'N/A')?></li>
 																				<? if ( empty($package['status']['companion']) ): ?>
@@ -506,12 +504,12 @@
 																<div class="col-6 col-md-4">
 																	<div class="card">
 																		<div class="card-body">
-																			<div class="indicators">
+																			<? /*<div class="indicators">
 																				<a href="#" title="Status Companion: <?=$package['status']['companion']?>"><span class="indicator status-<?=$package['status']['companion']?>"></span></a>
 																				<a href="#" title="Status IDPal: <?=$package['status']['idpal']?>"><span class="indicator status-<?=$package['status']['idpal']?>"></span></a>
-																			</div>
+																			</div> */ ?>
 																			<ul class="list-unstyled">
-																				<li><strong>Client</strong>: <?=$client_name?></li>
+																				<li><strong>Name</strong>: <?=$client_name?></li>
 																				<? if ( !empty($fields['business_name']) ): ?><li><strong>Business</strong>: <?=$fields['business_name']?></li><? endif; ?>
 																				<li><strong>Added</strong>: <?=date( 'd-m-Y H:i:s', strtotime( $client_data->user_registered ) )?></li>
 																				<li><strong>Email:</strong> <a href='mailto:<?=$package['email']?>' title='' target='_blank'><?=$package['email']?></a></li>
