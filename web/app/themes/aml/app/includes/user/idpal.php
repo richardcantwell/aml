@@ -312,16 +312,10 @@
 			    // 'meta_key' => 'aml_package'
 			);
 			$clients = get_users( $args );
-			// Handy\I_Handy::tip($clients);
+			// Handy\I_Handy::tip($clients); xx
 			?>
 			<? if ( current_user_can('manage_aml_clients') ): ?>
 				<style>
-					.indicator.vstatus-0 {background-color:red;}
-					.indicator.vstatus-1 {background-color:orange;}
-					.indicator.vstatus-2 {background-color:orange;}
-					.indicator.vstatus-3 {background-color:orange;}
-					.indicator.vstatus-4 {background-color:green;}
-					.indicator.vstatus-5 {background-color:orange;}
 				</style>
 				<div class="clients" style="margin-top:3rem;">
 					<? if ( !empty($clients) ): ?>
