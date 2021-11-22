@@ -312,7 +312,7 @@
 			    // 'meta_key' => 'aml_package'
 			);
 			$clients = get_users( $args );
-			// Handy\I_Handy::tip($clients); xx
+			// Handy\I_Handy::tip($clients);
 			?>
 			<? if ( current_user_can('manage_aml_clients') ): ?>
 				<style>
@@ -327,9 +327,9 @@
 										<th></th>
 										<th>Code</th>
 										<th>ID</th>
-										<th>Name</th>
 										<th>Email</th>
-										<th colspan="2">Status</th>
+										<th>Companion</th>
+										<th colspan="2">IDPal</th>
 										<th>Added</th>
 										<th></th>
 									</tr>
@@ -388,11 +388,11 @@
 			                                <td><img src="<?=$client_avatar?>" alt="<?=$client_name?>"/></td>
 			                                <td><?=$fields['code']?></td>
 			                                <td><?=$client->ID?></td>
-			                                <td><?=$client_name?><?=(!empty($fields['business_name'])?' ('.$fields['business_name'].')':'')?></td>
-			                                <td><?=$client->user_email?></td>
+			                                <td><?=$client->user_email?></td> <? /* <?=$client_name?><?=(!empty($fields['business_name'])?' ('.$fields['business_name'].')':'')?> */ ?>
+			                                <td>Companion</td>
 			                                <td>
 			                                	<? $c=0; foreach ( $config['status_codes'] as $code ): ?>
-			                                		<a href="#" title="Meaning: <?$code['meaning']?> Desc: <?$code['desc']?> Meaning: <?$code['meaning']?>"><span class="indicator"><?=$c?></span></a> <? /* status-<?=$c?>" */ ?>
+			                                		<a href="#" title="Meaning: <?$code['meaning']?> Desc: <?$code['desc']?> Meaning: <?$code['meaning']?>"><span class="indicator<?=($c == $package['status']['idpal']?' status-' . $package['status']['idpal'] : '')?>"><?=$c?></span></a> <? /* status-<?=$c?>" */ ?>
 			                                	<? $c++; endforeach; ?>
 
 			                                	<? /*if ( !empty($package) ): ?>
