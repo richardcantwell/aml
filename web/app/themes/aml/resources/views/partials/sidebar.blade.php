@@ -20,6 +20,7 @@
 		</div> <!-- .stats -->
 		<div class="codes" style="padding: 1rem; width:200px; height: 200px; overflow: scroll;">
 			<?php if ( !empty($data['config']) ): ?>
+				<p>ID Pal status codes</p>
 				<table class="table table-dark table-sm" style="font-size: 8px;">
 					<thead>
 						<tr>

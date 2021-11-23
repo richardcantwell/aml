@@ -328,9 +328,9 @@
 										<th>Code</th>
 										<th>ID</th>
 										<th>Client</th>
-										<th>Progress</th>
-										<th>Companion</th>
-										<th>IDPal</th>
+										<th>Steps</th>
+										<!--<th>Companion</th>-->
+										<th>Status</th>
 										<th></th>
 									</tr>
 								</thead>
@@ -392,13 +392,15 @@
 			                                <td>
 			                                	<? if ( !empty($package) ): ?>
 				                                	<? $s=0; foreach ( $config['companion_steps'] as $step ): ?>
-				                                		<a href="#" title="Meaning: <?=$step['meaning']?>"><span class="indicator<?=($s == $package['step']?' step-' . $package['step'] : '')?>"><?=$s?></span></a>
+				                                		<a href="#" title="<?=$step['meaning']?>"><span class="indicator<?=($s == $package['step']?' step-' . $package['step'] : '')?>"><?=$s?></span></a>
 				                                	<? $s++; endforeach; ?>
 			                                	<? endif; ?>
 			                                </td>
-			                                <td>
-				                            	<a href="#" title=""><span class="indicator<?=($package['status']['companion']?' cstatus-' . $package['status']['companion'] : '')?>"><?=$package['status']['companion']?></span></a>
-			                                </td>
+			                                <? /*<td>
+			                                	<? if ( !empty($package) ): ?>
+				                            		<a href="#" title=""><span class="indicator<?=($package['status']['companion']?' cstatus-' . $package['status']['companion'] : '')?>"><?=$package['status']['companion']?></span></a>
+			                                	<? endif; ?>
+			                                </td> */ ?>
 			                                <td>
 			                                	<? if ( !empty($package) ): ?>
 				                                	<? $c=0; foreach ( $config['status_codes'] as $code ): ?>
@@ -449,7 +451,7 @@
 																				<li><strong>Progress</strong>: 
 																					<ul class="mt-3">
 													                                	<? $s=0; foreach ( $config['companion_steps'] as $step ): ?>
-													                                		<li><?=$s?>. <span class="<?=($s == $package['status']['companion']?'highlight' : '')?>"><?=$step['meaning']?><?=($s===1 && !empty($package['uuid'])?' (<a href="'.add_query_arg( 'uuid', $package['uuid'], $config['url_base_idpal'] ).'" target="_blank">'.$package['uuid'].'</a>)':'')?></span></li>
+													                                		<li><?=$s?>. <span class="<?=($s == $package['step']?'highlight' : '')?>"><?=$step['meaning']?><?=($s===1 && !empty($package['uuid'])?' (<a href="'.add_query_arg( 'uuid', $package['uuid'], $config['url_base_idpal'] ).'" target="_blank">'.$package['uuid'].'</a>)':'')?></span></li>
 													                                	<? $s++; endforeach; ?>
 																					</ul>
 																				</li>
